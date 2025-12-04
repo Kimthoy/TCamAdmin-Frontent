@@ -93,48 +93,44 @@ export default function BannersPage() {
               setFormOpen(true);
             }}
             className="
-    group relative inline-flex items-center justify-center
-    w-14 h-14 rounded-full
-    bg-primary-600 hover:bg-primary-500          /* Real emerald background */
-    text-white font-medium text-2xl
-    shadow-xl hover:shadow-2xl hover:shadow-primary-500/50
-    transition-all duration-500 ease-out
-    overflow-hidden
-    hover:w-48 hover:pr-6
-    focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/40   /* Now uses primary! */
-    active:scale-95
+    relative px-6 h-14 rounded-xl
+    bg-emerald-500 dark:bg-black
+    shadow-xl shadow-emerald-500/40
+    ring-4 ring-emerald-500/20
+    flex items-center gap-3
+    animate-pulse-slow
+    transition-all 
+    hover:ring-emerald-400/80 hover:shadow-emerald-400/70
   "
-            aria-label="Add Banner"
           >
-            {/* Shine Sweep Effect */}
+            {/* Glow layer */}
             <span
-              aria-hidden="true"
-              className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent 
-               transition-transform duration-1000 group-hover:translate-x-full pointer-events-none"
+              className="
+      absolute inset-0 rounded-xl 
+      ring-8 ring-emerald-400/40 blur-xl
+      transition-all
+      group-hover:ring-emerald-300/60
+    "
             />
 
-            {/* Plus Icon */}
-            <span
+            {/* Icon (left) */}
+            <Plus
               className="
-    absolute inset-0 flex items-center justify-center
-    transition-all duration-500 ease-out
-    group-hover:scale-90 group-hover:rotate-90
-  "
-            >
-              <Plus className="w-7 h-7" />
-            </span>
+      relative z-10 w-6 h-6
+      text-white dark:text-emerald-400 
+      transition-colors
+    "
+            />
 
-            {/* Text Label */}
+            {/* Title (right) */}
             <span
               className="
-    absolute left-16 top-1/2 -translate-y-1/2
-    whitespace-nowrap text-sm font-semibold
-    opacity-0 translate-x-4
-    transition-all duration-500 ease-out
-    group-hover:opacity-100 group-hover:translate-x-0
-  "
+      relative z-10 text-lg font-semibold
+      text-white dark:text-emerald-400 
+      tracking-wide
+    "
             >
-              Add Banner
+              New
             </span>
           </button>
         </div>
