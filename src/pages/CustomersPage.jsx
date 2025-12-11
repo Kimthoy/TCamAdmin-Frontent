@@ -1,46 +1,28 @@
-// src/pages/BannersPage.jsx
+// src/pages/CustomersPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
+import { Plus, Edit, Trash2, ExternalLink, ImageOff } from "lucide-react";
 import {
-  Plus,
-  Edit,
-  Trash2,
-  ToggleLeft,
-  ToggleRight,
-  ImageOff,
-  Globe,
-} from "lucide-react";
-import {
-  fetchBanners,
-  toggleBannerStatus,
-  deleteBanner,
-  createBanner,
-  updateBanner,
-} from "../api/banner";
-import BannerForm from "../modals/BannerForm";
+  fetchCustomers,
+  deleteCustomer,
+  fetchCustomerCategories,
+} from "../api/customers";
+import CustomerForm from "../modals/CustomerForm";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 
-const PAGE_OPTIONS = [
-  { value: "home", label: "Home", color: "bg-emerald-100 text-emerald-700" },
-  { value: "about", label: "About Us", color: "bg-blue-100 text-blue-700" },
-  { value: "services", label: "Services", color: "bg-purple-100 text-purple-700" },
-  { value: "products", label: "Products", color: "bg-orange-100 text-orange-700" },
-  { value: "contact", label: "Contact", color: "bg-pink-100 text-pink-700" },
-  { value: "blog", label: "Blog", color: "bg-indigo-100 text-indigo-700" },
-];
-
-export default function BannersPage() {
-  const [bannersRaw, setBannersRaw] = useState([]);
+export default function CustomersPage() {
+  const [customersRaw, setCustomersRaw] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal states
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [deleteModal, setDeleteModal] = useState({ open: false, banner: null });
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    customer: null,
+  });
   const [deleting, setDeleting] = useState(false);
-  const [saving, setSaving] = useState(false);
 
-  // Search & pagination
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 8;
@@ -49,13 +31,23 @@ export default function BannersPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetchBanners({ per_page: 100 });
-      const list = Array.isArray(res.data?.data) ? res.data.data : res.data || [];
-      setBannersRaw(list);
+      const [custRes, catRes] = await Promise.all([
+        fetchCustomers({ per_page: 100 }),
+        fetchCustomerCategories(),
+      ]);
+
+      const customers = Array.isArray(custRes.data?.data)
+        ? custRes.data.data
+        : custRes.data || [];
+      const cats = Array.isArray(catRes.data?.data)
+        ? catRes.data.data
+        : catRes.data || [];
+
+      setCustomersRaw(customers);
+      setCategories(cats);
     } catch (err) {
-      setError("Failed to load banners");
-      setBannersRaw([]);
-      console.error("fetchBanners error:", err);
+      setError("Failed to load customers");
+      setCustomersRaw([]);
     } finally {
       setLoading(false);
     }
@@ -66,16 +58,16 @@ export default function BannersPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return bannersRaw;
+    if (!query.trim()) return customersRaw;
     const q = query.toLowerCase().trim();
-    return bannersRaw.filter(
-      (b) =>
-        b.title?.toLowerCase().includes(q) ||
-        b.subtitle?.toLowerCase().includes(q) ||
-        b.page?.toLowerCase().includes(q) ||
-        b.link?.toLowerCase().includes(q)
+    return customersRaw.filter(
+      (c) =>
+        c.name?.toLowerCase().includes(q) ||
+        c.short_description?.toLowerCase().includes(q) ||
+        c.link?.toLowerCase().includes(q) ||
+        c.category?.name?.toLowerCase().includes(q)
     );
-  }, [bannersRaw, query]);
+  }, [customersRaw, query]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   useEffect(() => {
@@ -87,41 +79,26 @@ export default function BannersPage() {
     return filtered.slice(start, start + PAGE_SIZE);
   }, [filtered, page]);
 
-  const handleSave = async (formData, isEdit, id) => {
-    setSaving(true);
-    try {
-      if (isEdit) {
-        await updateBanner(id, formData);
-      } else {
-        await createBanner(formData);
-      }
-      await load();
-    } catch (err) {
-      console.error("Save failed:", err);
-      throw err;
-    } finally {
-      setSaving(false);
-    }
+  const handleSaved = () => {
+    load();
+    setFormOpen(false);
+    setEditing(null);
+    setPage(1);
   };
 
-  const handleEdit = (banner) => {
-    setEditing(banner);
-    setFormOpen(true);
-  };
-
-  const openDeleteModal = (banner) => {
-    setDeleteModal({ open: true, banner });
+  const openDeleteModal = (customer) => {
+    setDeleteModal({ open: true, customer });
   };
 
   const closeDeleteModal = () => {
-    setDeleteModal({ open: false, banner: null });
+    setDeleteModal({ open: false, customer: null });
   };
 
   const handleDelete = async () => {
-    if (!deleteModal.banner) return;
+    if (!deleteModal.customer) return;
     setDeleting(true);
     try {
-      await deleteBanner(deleteModal.banner.id);
+      await deleteCustomer(deleteModal.customer.id);
       await load();
       closeDeleteModal();
     } catch (err) {
@@ -131,36 +108,16 @@ export default function BannersPage() {
     }
   };
 
-  const handleToggle = async (id) => {
-    try {
-      await toggleBannerStatus(id);
-      await load();
-    } catch (err) {
-      console.error("Toggle failed:", err);
-    }
-  };
-
-  const getPageBadge = (pageValue) => {
-    const option = PAGE_OPTIONS.find((opt) => opt.value === pageValue);
-    if (!option) return <span className="text-gray-500 text-xs">Unknown</span>;
-    return (
-      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${option.color}`}>
-        <Globe className="w-3 h-3" />
-        {option.label}
-      </span>
-    );
-  };
-
   return (
     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Banners
+            Customers
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Manage banners for different pages — Home, About, Services, etc.
+            Manage your client logos and testimonials.
           </p>
         </div>
 
@@ -173,7 +130,7 @@ export default function BannersPage() {
                 setQuery(e.target.value);
                 setPage(1);
               }}
-              placeholder="Search by title, page, link..."
+              placeholder="Search customers..."
               className="w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition"
             />
           </div>
@@ -183,26 +140,29 @@ export default function BannersPage() {
               setEditing(null);
               setFormOpen(true);
             }}
-            className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex items-center gap-2"
+            className="relative group px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-medium rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-xl transition duration-300 flex items-center gap-2 overflow-hidden"
           >
             <Plus className="w-4 h-4" />
-            New Banner
+            New Customer
           </button>
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Card */}
       <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {loading ? (
           <div className="p-16 text-center">
-            <div className="inline-flex items-center gap-3 text-gray-500">
+            <div className="inline-flex items-center gap-3 text-gray-500 dark:text-gray-400">
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-emerald-500" />
-              <span>Loading banners...</span>
+              <span>Loading customers...</span>
             </div>
           </div>
         ) : error ? (
-          <div className="p-8 text-center text-red-600">
-            <p className="font-medium">{error}</p>
+          <div className="p-8 text-center text-red-600 dark:text-red-300">
+            <p className="font-medium">Failed to load customers</p>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              {error}
+            </p>
           </div>
         ) : (
           <>
@@ -211,13 +171,13 @@ export default function BannersPage() {
                 <thead>
                   <tr className="border-b-2 border-gray-200 dark:border-gray-700 bg-gray-50/70 dark:bg-gray-900/50">
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                      Preview
+                      Logo
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                      Title & Subtitle
+                      Name
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                      Page
+                      Category
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                       Link
@@ -239,108 +199,103 @@ export default function BannersPage() {
                           <div className="mx-auto w-20 h-20 mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                             <ImageOff className="w-10 h-10 text-gray-400" />
                           </div>
-                          <h3 className="text-lg font-medium">No banners found</h3>
+                          <h3 className="text-lg font-medium">
+                            No customers found
+                          </h3>
                           <p className="mt-2 text-sm">
-                            Create your first banner or adjust your search.
+                            Add your first client logo or adjust your search.
                           </p>
                         </div>
                       </td>
                     </tr>
                   ) : (
-                    pageItems.map((b, idx) => (
+                    pageItems.map((c, idx) => (
                       <tr
-                        key={b.id}
+                        key={c.id}
                         className={`transition-all hover:bg-gray-50 dark:hover:bg-gray-700/40 ${
-                          idx % 2 === 0 ? "bg-white dark:bg-gray-800" : "bg-gray-10 dark:bg-gray-800/50"
+                          idx % 2 === 0
+                            ? "bg-white dark:bg-gray-800"
+                            : "bg-gray-10 dark:bg-gray-800/50"
                         }`}
                       >
-                        {/* Preview */}
+                        {/* Logo */}
                         <td className="px-6 py-4">
-                          <div className="w-32 h-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-600">
-                            {b.image_url ? (
+                          <div className="w-24 h-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                            {c.logo_url ? (
                               <img
-                                src={b.image_url}
-                                alt={b.title}
-                                className="w-full h-full object-cover"
+                                src={c.logo_url}
+                                alt={c.name}
+                                className="max-w-full max-h-full object-contain p-2"
                                 loading="lazy"
-                                onError={(e) => {
-                                  e.currentTarget.src = "/images/placeholder.png";
-                                }}
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <ImageOff className="w-10 h-10 text-gray-400" />
-                              </div>
+                              <ImageOff className="w-8 h-8 text-gray-400" />
                             )}
                           </div>
                         </td>
 
-                        {/* Title & Subtitle */}
+                        {/* Name & Description */}
                         <td className="px-6 py-4">
-                          <div className="max-w-md">
-                            <div className="font-semibold text-gray-900 dark:text-white">
-                              {b.title || <span className="text-gray-400 italic">No title</span>}
-                            </div>
-                            {b.subtitle && (
-                              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                                {b.subtitle}
-                              </p>
-                            )}
+                          <div className="font-semibold text-gray-900 dark:text-white">
+                            {c.name}
                           </div>
+                          {c.short_description && (
+                            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                              {c.short_description}
+                            </p>
+                          )}
                         </td>
 
-                        {/* Page Badge */}
-                        <td className="px-6 py-4">
-                          {getPageBadge(b.page || "home")}
+                        {/* Category */}
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                          {c.category?.name || "—"}
                         </td>
 
                         {/* Link */}
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                          {b.link ? (
+                        <td className="px-6 py-4">
+                          {c.link ? (
                             <a
-                              href={b.link}
+                              href={c.link}
                               target="_blank"
-                              rel="noreferrer"
-                              className="text-emerald-600 dark:text-emerald-400 hover:underline break-all"
+                              rel="noopener noreferrer"
+                              className="text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1 text-sm"
                             >
-                              {b.link.length > 40 ? `${b.link.substring(0, 40)}...` : b.link}
+                              Visit <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           ) : (
-                            "—"
+                            <span className="text-gray-500 text-sm">—</span>
                           )}
                         </td>
 
                         {/* Status */}
                         <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleToggle(b.id)}
-                            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                              b.is_active
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                              c.is_active
                                 ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
                                 : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                             }`}
                           >
-                            {b.is_active ? (
-                              <ToggleRight className="w-5 h-5 text-emerald-600" />
-                            ) : (
-                              <ToggleLeft className="w-5 h-5 text-gray-500" />
-                            )}
-                            {b.is_active ? "Active" : "Disabled"}
-                          </button>
+                            {c.is_active ? "Active" : "Hidden"}
+                          </span>
                         </td>
 
                         {/* Actions */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-3">
                             <button
-                              onClick={() => handleEdit(b)}
+                              onClick={() => {
+                                setEditing(c);
+                                setFormOpen(true);
+                              }}
                               className="p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all"
                               title="Edit"
                             >
                               <Edit className="w-5 h-5" />
                             </button>
+
                             <button
-                              onClick={() => openDeleteModal(b)}
+                              onClick={() => openDeleteModal(c)}
                               className="p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 transition-all"
                               title="Delete"
                             >
@@ -356,11 +311,20 @@ export default function BannersPage() {
             </div>
 
             {/* Pagination */}
-            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm">
-              <div className="text-gray-600 dark:text-gray-400">
-                Showing {(page - 1) * PAGE_SIZE + 1} to{" "}
-                {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} banners
+            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Showing{" "}
+                <span className="font-semibold">
+                  {filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}
+                </span>{" "}
+                to{" "}
+                <span className="font-semibold">
+                  {Math.min(page * PAGE_SIZE, filtered.length)}
+                </span>{" "}
+                of <span className="font-semibold">{filtered.length}</span>{" "}
+                customers
               </div>
+
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -369,9 +333,11 @@ export default function BannersPage() {
                 >
                   Prev
                 </button>
-                <span className="px-3 text-gray-700 dark:text-gray-300">
+
+                <div className="text-sm text-gray-700 dark:text-gray-300 px-3">
                   Page {page} / {totalPages}
-                </span>
+                </div>
+
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page >= totalPages}
@@ -386,14 +352,15 @@ export default function BannersPage() {
       </div>
 
       {/* Form Modal */}
-      <BannerForm
+      <CustomerForm
         open={formOpen}
         onClose={() => {
           setFormOpen(false);
           setEditing(null);
         }}
-        onSaved={handleSave}
+        onSaved={handleSaved}
         initial={editing}
+        categories={categories}
       />
 
       {/* Delete Modal */}
@@ -402,8 +369,8 @@ export default function BannersPage() {
         onClose={closeDeleteModal}
         onConfirm={handleDelete}
         loading={deleting}
-        title={`Delete "${deleteModal.banner?.title || "Banner"}"?`}
-        message="This banner will be permanently removed."
+        title={`Delete "${deleteModal.customer?.name || "Customer"}"?`}
+        message="This customer logo will be permanently removed from the site."
       />
     </div>
   );

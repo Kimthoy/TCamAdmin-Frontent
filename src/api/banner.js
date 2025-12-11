@@ -1,37 +1,24 @@
 // src/api/banner.js
 import api from "./index";
 
-// Get all banners
-export const fetchBanners = (params = {}) => {
-  return api.get("/admin/banners", { params });
-};
+export const fetchBanners = (params = {}) =>
+  api.get("/admin/banners", { params });
+export const getBanner = (id) => api.get(`/admin/banners/${id}`);
+export const createBanner = (formData) => api.post("/admin/banners", formData);
 
-// Get single banner
-export const getBanner = (id) => {
-  return api.get(`/admin/banners/${id}`);
-};
-
-// Create banner (multipart)
-export const createBanner = (formData) => {
-  return api.post("/admin/banners", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-};
-
-// Update banner (Laravel requires POST + _method=PUT)
 export const updateBanner = (id, formData) => {
+  // assume formData is an instance of FormData
+  if (!(formData instanceof FormData)) {
+    throw new Error("updateBanner expects FormData");
+  }
   formData.append("_method", "PUT");
   return api.post(`/admin/banners/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
-// Delete banner
-export const deleteBanner = (id) => {
-  return api.delete(`/admin/banners/${id}`);
-};
+export const deleteBanner = (id) => api.delete(`/admin/banners/${id}`);
 
-// Toggle banner status (active/inactive)
 export const toggleBannerStatus = (id) => {
-  return api.post(`/admin/banners/${id}/toggle-status`);
+  return api.patch(`/admin/banners/${id}/toggle-status`);
 };

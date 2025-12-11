@@ -20,7 +20,6 @@ import { Link, useLocation } from "react-router-dom";
 const COLLAPSED_PANEL_OFFSET = 20;
 const PANEL_MIN_TOP = 75;
 const PANEL_WIDTH_PX = 280;
-
 const menuVariants = {
   Dashboard: {
     bg: "from-sky-500 to-indigo-500",
@@ -47,7 +46,7 @@ const menuVariants = {
     bg: "from-yellow-500 to-amber-500",
     icon: "from-yellow-400 to-amber-400",
   },
-  Pages: { bg: "from-gray-500 to-gray-600", icon: "from-gray-400 to-gray-500" },
+  Posts: { bg: "from-rose-500 to-pink-500", icon: "from-rose-400 to-pink-400" },
   "Contact Messages": {
     bg: "from-indigo-500 to-purple-500",
     icon: "from-indigo-400 to-purple-400",
@@ -60,14 +59,16 @@ const menuVariants = {
 
 const menu = [
   { icon: Home, label: "Dashboard", route: "/dashboard" },
+
   {
     icon: Box,
     label: "Products",
     submenu: [
       { label: "All Products", route: "/products" },
-      { label: "Product Categories", route: "/product-categories" },
+      { label: "Product Categories", route: "/categories" },
     ],
   },
+
   {
     icon: Briefcase,
     label: "Services",
@@ -76,11 +77,29 @@ const menu = [
       { label: "Service Categories", route: "/service-categories" },
     ],
   },
-  { icon: Users, label: "Users", route: "/users" },
-  { icon: Users, label: "Customers", route: "/customers" },
+
+  {
+    icon: Users,
+    label: "Customers",
+    submenu: [
+      { label: "All Customers", route: "/customers" },
+      { label: "Customer Categories", route: "/customer-categories" },
+    ],
+  },
+
   { icon: Users, label: "Partners", route: "/partners" },
   { icon: Image, label: "Banners", route: "/banners" },
-  { icon: FileText, label: "Pages", route: "/pages" },
+
+  {
+    icon: FileText,
+    label: "Posts",
+    submenu: [
+      { label: "All Posts", route: "/posts" },
+      { label: "Post Categories", route: "/post-categories" },
+      { label: "Jobs", route: "/jobs" },
+    ],
+  },
+
   { icon: Mail, label: "Contact Messages", route: "/contact-messages" },
   { icon: Settings, label: "Settings", route: "/settings" },
 ];
@@ -93,7 +112,8 @@ export default function Sidebar({
 }) {
   const location = useLocation();
   const [collapsedInternal, setCollapsedInternal] = useState(false);
-  const [openSubmenus, setOpenSubmenus] = useState({});
+  // single open submenu label (or null) — ensures only one submenu is open at a time
+  const [openSubmenu, setOpenSubmenu] = useState(null);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [panelTop, setPanelTop] = useState(PANEL_MIN_TOP + 40);
@@ -119,8 +139,10 @@ export default function Sidebar({
     else setCollapsedInternal((s) => !s);
   };
 
+  // toggles a submenu: if a different submenu is open, close it and open this one
+  // clicking the same submenu toggles it closed
   const toggleSubmenu = (label) => {
-    setOpenSubmenus((prev) => ({ ...prev, [label]: !prev[label] }));
+    setOpenSubmenu((prev) => (prev === label ? null : label));
   };
 
   const isItemActive = (item) => {
@@ -159,7 +181,7 @@ export default function Sidebar({
       <aside
         className={`fixed md:static top-0 left-0 h-full z-40 transition-all duration-300
           ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-          ${effectiveCollapsed ? "w-23" : "w-72"}`}
+          ${effectiveCollapsed ? "w-24" : "w-60"}`}
       >
         <div className="glass-sidebar h-full flex flex-col bg-white/80 dark:bg-gray-900/80 shadow-lg backdrop-blur-xl border-r border-gray-200 dark:border-gray-800">
           {/* Header */}
@@ -182,12 +204,12 @@ export default function Sidebar({
             {!isMobile && (
               <button
                 onClick={handleToggleCollapse}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg "
               >
                 {effectiveCollapsed ? (
-                  <ChevronRight className="h-6 w-6" />
+                  <ChevronRight className="h-6 w-6 dark:text-slate-200 cursor-pointer" />
                 ) : (
-                  <ChevronLeft className="h-6 w-6" />
+                  <ChevronLeft className="h-6 w-6 dark:text-slate-200 cursor-pointer" />
                 )}
               </button>
             )}
@@ -198,7 +220,7 @@ export default function Sidebar({
             {menu.map((item) => {
               const Icon = item.icon;
               const hasSubmenu = !!item.submenu;
-              const isOpen = openSubmenus[item.label];
+              const isOpen = openSubmenu === item.label;
               const active = isItemActive(item);
               const variant = menuVariants[item.label] || {
                 bg: "from-gray-500 to-gray-600",
@@ -262,22 +284,27 @@ export default function Sidebar({
                       {!effectiveCollapsed &&
                         hasSubmenu &&
                         (isOpen ? (
-                          <ChevronUp className="h-5 w-5" />
+                          <ChevronUp className="h-5 w-5 dark:text-slate-200 cursor-pointer" />
                         ) : (
-                          <ChevronDown className="h-5 w-5" />
+                          <ChevronDown className="h-5 w-5 dark:text-slate-200 cursor-pointer" />
                         ))}
                     </button>
                   )}
 
-                  {/* Submenu */}
+                  {/* Submenu (only one can be open at a time) */}
                   {!effectiveCollapsed && hasSubmenu && isOpen && (
                     <div className="ml-12 mt-1 space-y-1">
                       {item.submenu.map((sub) => (
                         <Link
                           key={sub.route}
                           to={sub.route}
-                          onClick={onRequestCloseMobile}
-                          className={`block px-4 py-2 rounded-lg text-sm font-medium transition-all
+                          onClick={() => {
+                            // when navigating, close mobile menu if requested
+                            onRequestCloseMobile && onRequestCloseMobile();
+                            // optionally close submenu after navigation — keep it open for context
+                            // setOpenSubmenu(null);
+                          }}
+                          className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all
                             ${
                               location.pathname === sub.route
                                 ? `bg-gradient-to-r ${variant.bg} text-white`
@@ -294,21 +321,11 @@ export default function Sidebar({
             })}
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <button className="w-full flex items-center gap-4 px-3 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 transition">
-              <LogOut className="h-6 w-6" />
-              {!effectiveCollapsed && (
-                <span className="font-medium">Logout</span>
-              )}
-            </button>
-          </div>
-
           {/* Floating Preview Panel (collapsed mode) */}
           {effectiveCollapsed && hoveredItem && (
             <div
               ref={panelRef}
-              className="fixed left-24 rounded-xl shadow-2xl bg-white/95 dark:bg-gray-900/95 border border-gray-200 dark:border-gray-800 backdrop-blur-md p-4"
+              className="fixed left-[70px] rounded-xl shadow-2xl bg-[#FFFFFF] dark:bg-gray-900 dark:text-slate-200 border border-gray-200 dark:border-gray-800 backdrop-blur-md p-4"
               style={{ top: panelTop, width: PANEL_WIDTH_PX }}
               onMouseEnter={() => setHoveredItem(hoveredItem)}
               onMouseLeave={() => setHoveredItem(null)}
@@ -320,8 +337,8 @@ export default function Sidebar({
                 const variant = menuVariants[item.label] || {};
                 const Icon = item.icon;
                 return (
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-3 mb-4">
                       <div
                         className={`h-12 w-12 rounded-lg bg-gradient-to-br ${variant.icon} flex items-center justify-center`}
                       >
@@ -340,7 +357,7 @@ export default function Sidebar({
                           key={sub.route}
                           to={sub.route}
                           onClick={onRequestCloseMobile}
-                          className="block px-3 py-2 rounded-md text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+                          className={`block px-3 py-3 hover:shadow-2xl rounded-md text-sm dark:hover:bg-gray-700 hover:bg-gray-200 transition-all`}
                         >
                           {sub.label}
                         </Link>

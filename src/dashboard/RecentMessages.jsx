@@ -1,47 +1,39 @@
 // src/dashboard/RecentMessages.jsx
-const messages = [
-  {
-    id: 1,
-    name: "John Doe",
-    text: "New order #12345 has been placed",
-    time: "2 minutes ago",
-    avatarColor: "bg-blue-500",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    text: "New customer registered successfully",
-    time: "15 minutes ago",
-    avatarColor: "bg-green-500",
-  },
-  {
-    id: 3,
-    name: "System Alert",
-    text: "Low stock warning for Product SKU789",
-    time: "1 hour ago",
-    avatarColor: "bg-orange-500",
-  },
-  {
-    id: 4,
-    name: "Mike Johnson",
-    text: "Payment received for invoice #INV-2025",
-    time: "3 hours ago",
-    avatarColor: "bg-purple-500",
-  },
-];
+import React from "react";
 
-export function RecentMessages() {
+export function RecentMessages({ messages = [] }) {
+  // fallback demo
+  const demo = [
+    {
+      id: 1,
+      name: "John Doe",
+      text: "New order #12345 has been placed",
+      time: "2 minutes ago",
+      avatarColor: "bg-blue-500",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      text: "New customer registered successfully",
+      time: "15 minutes ago",
+      avatarColor: "bg-green-500",
+    },
+  ];
+  const list = messages.length ? messages : demo;
+
   return (
     <div className="space-y-4">
-      {messages.map((msg) => (
+      {list.map((msg) => (
         <div
           key={msg.id}
           className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200 group"
         >
           <div
-            className={`w-12 h-12 rounded-full ${msg.avatarColor} flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0`}
+            className={`${
+              msg.avatarColor ?? "bg-gray-400"
+            } w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0`}
           >
-            {msg.name[0]}
+            {msg.name?.[0] ?? "U"}
           </div>
 
           <div className="flex-1 min-w-0">

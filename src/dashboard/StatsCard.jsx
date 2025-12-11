@@ -30,6 +30,35 @@ const variants = {
   },
 };
 
+function Sparkline({ data = [], stroke = "#0ea5e9" }) {
+  if (!data || data.length === 0) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const width = 80;
+  const height = 24;
+  // build path
+  const pts = data.map((d, i) => {
+    const x = (i / (data.length - 1 || 1)) * width;
+    // normalize y (invert)
+    const y =
+      max === min ? height / 2 : height - ((d - min) / (max - min)) * height;
+    return `${x},${y}`;
+  });
+  const d = `M${pts.join(" L ")}`;
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <path
+        d={d}
+        fill="none"
+        stroke={stroke}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function StatsCard({
   title,
   value,
@@ -38,24 +67,25 @@ export function StatsCard({
   icon: Icon,
   variant = "default",
   subtitle,
+  trendData = [],
 }) {
   const isUp = trend === "up";
   const style = variants[variant] || variants.default;
+  const strokeColor = isUp ? "#10b981" : "#ef4444";
 
   return (
     <div
       className={`group relative overflow-hidden rounded-2xl p-6 
       bg-gradient-to-r ${style.bg} border ${style.border}
-      shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
+      shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
     >
       <div className="flex items-center justify-between">
-        {/* Left text block */}
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+        <div className="space-y-2 max-w-[60%]">
+          <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
             {title}
           </p>
 
-          <p className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+          <p className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white truncate">
             {value}
           </p>
 
@@ -65,7 +95,7 @@ export function StatsCard({
             </p>
           )}
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-1">
             <span
               className={`flex items-center gap-1 text-sm font-semibold ${
                 isUp
@@ -80,25 +110,25 @@ export function StatsCard({
               )}
               {change}
             </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              vs last month
-            </span>
+            <span className="text-xs text-gray-400">vs last month</span>
           </div>
         </div>
 
-        {/* RIGHT ICON WITH LIQUID GLASS EFFECT */}
-        <div
-          className={`
-            w-16 h-16 rounded-full flex items-center justify-center
+        <div className="flex flex-col items-end gap-3">
+          <div
+            className={`
+            w-14 h-14 rounded-full flex items-center justify-center
             bg-gradient-to-br ${style.icon}
             backdrop-blur-xl bg-opacity-30
             shadow-lg border border-white/30 dark:border-white/10
           `}
-        >
-          <Icon
-            className="w-8 h-8 text-white drop-shadow-md"
-            strokeWidth={2.2}
-          />
+          >
+            {Icon && <Icon className="w-7 h-7 text-white" strokeWidth={2.2} />}
+          </div>
+
+          <div className="opacity-80">
+            <Sparkline data={trendData} stroke={isUp ? "#059669" : "#dc2626"} />
+          </div>
         </div>
       </div>
     </div>

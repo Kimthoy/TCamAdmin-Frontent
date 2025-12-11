@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Lock,
@@ -12,89 +12,103 @@ import {
 import { login } from "../api/auth";
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const id = useId();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null); // { type: 'error'|'success', text }
+  const [message, setMessage] = useState(null);
   const [shake, setShake] = useState(false);
-  const navigate = useNavigate();
-  const cardRef = useRef(null);
 
+  const emailRef = useRef(null);
+
+  // Focus email on load
+  useEffect(() => {
+    emailRef.current?.focus();
+  }, []);
+
+  // On success or error
   useEffect(() => {
     if (!message) return;
-    // auto-clear success after 2.5s and redirect on success
+
     if (message.type === "success") {
       const t = setTimeout(() => {
         navigate("/dashboard", { replace: true });
-      }, 900);
+      }, 800);
       return () => clearTimeout(t);
     }
 
-    // shake animation on error
     if (message.type === "error") {
       setShake(true);
-      const t2 = setTimeout(() => setShake(false), 600);
-      return () => clearTimeout(t2);
+      const t = setTimeout(() => setShake(false), 600);
+      return () => clearTimeout(t);
     }
   }, [message, navigate]);
 
-  // simple client-side validation helper
+  // Client-side validation
   const validate = () => {
-    if (!email) return "Please enter your email address.";
-    // basic email regex
-    const re = /\S+@\S+\.\S+/;
-    if (!re.test(email)) return "Please enter a valid email address.";
+    if (!email) return "Please enter your email.";
+    if (!/^\S+@\S+\.\S+$/.test(email)) return "Please enter a valid email.";
     if (!password) return "Please enter your password.";
     if (password.length < 6) return "Password must be at least 6 characters.";
     return null;
   };
 
+  // Handle login submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
 
-    const clientError = validate();
-    if (clientError) {
-      setMessage({ type: "error", text: clientError });
+    // Validate first
+    const error = validate();
+    if (error) {
+      setMessage({ type: "error", text: error });
       return;
     }
 
     try {
       setLoading(true);
+
+      // Call login API (JWT)
       await login(email.trim(), password);
-      setMessage({ type: "success", text: "Welcome back — redirecting…" });
-      // note: navigation happens in useEffect after success
+
+      setMessage({
+        type: "success",
+        text: "Welcome back — redirecting…",
+      });
     } catch (err) {
       const msg =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.message ||
-        "Login failed — check email/password.";
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        "Invalid email or password.";
+
       setMessage({ type: "error", text: msg });
     } finally {
       setLoading(false);
     }
   };
 
+  const labelBase =
+    "absolute left-4 pointer-events-none transition-all duration-200 text-sm";
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900 px-4">
-      {/* Floating Blobs */}
+      {/* Background blobs */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-20 -top-12 w-96 h-96 bg-purple-600/25 rounded-full filter blur-3xl animate-blob"></div>
-        <div className="absolute -right-16 top-28 w-80 h-80 bg-indigo-600/25 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute left-10 bottom-[-80px] w-96 h-96 bg-pink-600/25 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
+        <div className="absolute -left-20 -top-12 w-96 h-96 bg-purple-600/25 rounded-full blur-3xl animate-blob"></div>
+        <div className="absolute -right-16 top-28 w-80 h-80 bg-indigo-600/25 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute left-10 bottom-[-80px] w-96 h-96 bg-pink-600/25 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Card */}
+      {/* Login card */}
       <div
-        ref={cardRef}
         className={`relative z-10 w-full max-w-md mx-auto transform transition-all duration-500 ${
-          shake ? "animate-shake" : "translate-y-0"
+          shake ? "animate-shake" : ""
         }`}
       >
         <div className="backdrop-blur-2xl bg-white/6 border border-white/10 rounded-3xl shadow-2xl p-8 md:p-10">
-          {/* Header */}
           <div className="text-center mb-6">
             <div className="mx-auto inline-flex items-center justify-center rounded-full h-16 w-16 bg-white/12 shadow-inner">
               <Lock className="h-8 w-8 text-white" strokeWidth={2} />
@@ -105,10 +119,9 @@ export default function Login() {
             <p className="mt-1 text-sm text-white/70">Admin Dashboard Login</p>
           </div>
 
-          {/* Message */}
+          {/* Message box */}
           {message && (
             <div
-              role="alert"
               className={`mb-4 flex items-center gap-3 px-4 py-2 rounded-xl text-sm ${
                 message.type === "error"
                   ? "bg-red-600/20 text-red-100 border border-red-600/40"
@@ -120,52 +133,52 @@ export default function Login() {
               ) : (
                 <CheckCircle className="h-5 w-5" />
               )}
-              <div className="flex-1">{message.text}</div>
+              <span>{message.text}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            {/* Email input */}
             <div className="relative">
               <input
-                id="email"
-                name="email"
+                id={`${id}-email`}
+                ref={emailRef}
                 type="email"
-                autoComplete="email"
                 required
                 disabled={loading}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
                 placeholder="Email address"
-                aria-label="Email address"
+                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
               />
               <label
-                htmlFor="email"
-                className="absolute left-4 top-3 text-white/70 text-sm pointer-events-none transition-all duration-200 peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm"
+                htmlFor={`${id}-email`}
+                className={`${labelBase} ${
+                  email ? "-top-3 text-xs text-white" : "top-3 text-white/70"
+                } peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white`}
               >
                 Email address
               </label>
               <Mail className="absolute right-4 top-4 h-5 w-5 text-white/60" />
             </div>
 
-            {/* Password */}
+            {/* Password input */}
             <div className="relative">
               <input
-                id="password"
-                name="password"
+                id={`${id}-password`}
                 type={showPassword ? "text" : "password"}
                 required
                 disabled={loading}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
                 placeholder="Password"
-                aria-label="Password"
+                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
               />
               <label
-                htmlFor="password"
-                className="absolute left-4 top-3 text-white/70 text-sm pointer-events-none transition-all duration-200 peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white peer-placeholder-shown:top-3 peer-placeholder-shown:text-sm"
+                htmlFor={`${id}-password`}
+                className={`${labelBase} ${
+                  password ? "-top-3 text-xs text-white" : "top-3 text-white/70"
+                } peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white`}
               >
                 Password
               </label>
@@ -174,7 +187,7 @@ export default function Login() {
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
                 className="absolute right-3 top-3 text-white/60 hover:text-white p-2"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label="Toggle password visibility"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -184,74 +197,61 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Submit */}
+            {/* Submit button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-3 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-[1.02] transform transition-all duration-200 disabled:opacity-70"
+              className="relative overflow-hidden w-full flex items-center justify-center gap-3 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg transition-all hover:scale-[1.03] focus:ring-4 focus:ring-indigo-400/30 disabled:opacity-70 btn-anim"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Continue to Dashboard"
-              )}
+              <span
+                aria-hidden
+                className="absolute inset-0 -translate-x-full bg-[linear-gradient(90deg,rgba(255,255,255,0.06),rgba(255,255,255,0.12),rgba(255,255,255,0.06))] animate-shimmer"
+              />
+
+              <span className="relative flex items-center gap-3">
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    Signing in…
+                  </>
+                ) : (
+                  "Continue to Dashboard"
+                )}
+              </span>
             </button>
           </form>
 
-          {/* Footer */}
           <div className="mt-6 text-center text-white/60 text-sm">
-            <span className="inline-flex items-center gap-2">
-              <Lock className="h-4 w-4" /> Secure • Encrypted • Protected
-            </span>
+            <Lock className="h-4 w-4 inline-block mr-1" />
+            Secure • Encrypted • Protected
           </div>
         </div>
       </div>
 
-      {/* Inline animations (Tailwind utilities + custom keyframes) */}
-      <style jsx>{`
+      {/* Animations */}
+      <style>{`
         @keyframes blob {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(30px, -40px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 30px) scale(0.95);
-          }
+          0%,100%{transform:translate(0,0) scale(1);}
+          33%{transform:translate(30px,-40px) scale(1.1);}
+          66%{transform:translate(-20px,30px) scale(0.95);}
         }
-        .animate-blob {
-          animation: blob 10s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-
-        /* shake on error */
+        .animate-blob { animation: blob 10s infinite; }
+        .animation-delay-2000 { animation-delay:2s; }
+        .animation-delay-4000 { animation-delay:4s; }
+        
         @keyframes shake {
-          0%,
-          100% {
-            transform: translateX(0);
-          }
-          20%,
-          60% {
-            transform: translateX(-8px);
-          }
-          40%,
-          80% {
-            transform: translateX(8px);
-          }
+          0%,100%{transform:translateX(0);}
+          20%,60%{transform:translateX(-8px);}
+          40%,80%{transform:translateX(8px);}
         }
-        .animate-shake {
-          animation: shake 0.6s ease-in-out;
+        .animate-shake { animation: shake 0.6s ease-in-out; }
+
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); opacity: 0; }
+          50% { transform: translateX(0%); opacity: 1; }
+          100% { transform: translateX(100%); opacity: 0; }
         }
+        .animate-shimmer { animation: shimmer 1.6s infinite linear; }
       `}</style>
     </div>
   );
