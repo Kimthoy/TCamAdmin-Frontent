@@ -35,8 +35,10 @@
     @apply bg-gradient-to-br from-slate-50 via-white to-blue-50 
            dark:from-gray-950 dark:via-gray-900 dark:to-black 
            min-h-screen font-sans;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-      Roboto;
+    font-family: "Aptos", "Open Sans", system-ui, -apple-system, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans",
+      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+      "Noto Color Emoji";
   }
 
   html {

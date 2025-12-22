@@ -15,9 +15,13 @@ import { motion, AnimatePresence } from "framer-motion";
 const PAGE_OPTIONS = [
   { value: "home", label: "Home" },
   { value: "about", label: "About Us" },
-  { value: "services", label: "Services" },
-  { value: "products", label: "Products" },
+  { value: "solutions", label: "Solution" },
+  { value: "products", label: "Product" },
   { value: "contact", label: "Contact" },
+  { value: "partners", label: "Partner" },
+  { value: "customers", label: "Customer" },
+  { value: "jobs", label: "Career" },
+  { value: "events", label: "Event" },
   { value: "blog", label: "Blog" },
 ];
 

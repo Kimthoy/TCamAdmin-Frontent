@@ -10,10 +10,16 @@ import {
   Mail,
   Settings,
   LogOut,
+  Handshake,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   ChevronUp,
+  User,
+  Info,
+  Puzzle,
+  Headphones,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -25,84 +31,132 @@ const menuVariants = {
     bg: "from-sky-500 to-indigo-500",
     icon: "from-sky-500 to-indigo-500",
   },
-  Products: {
+  Product: {
     bg: "from-teal-500 to-green-500",
     icon: "from-teal-400 to-green-400",
   },
-  Services: {
+  Solution: {
     bg: "from-purple-500 to-violet-500",
     icon: "from-purple-400 to-violet-400",
   },
   Users: { bg: "from-blue-500 to-cyan-500", icon: "from-blue-400 to-cyan-400" },
-  Customers: {
+  Customer: {
     bg: "from-orange-500 to-amber-500",
     icon: "from-orange-400 to-amber-400",
   },
-  Partners: {
+  Partner: {
     bg: "from-pink-500 to-rose-500",
     icon: "from-pink-400 to-rose-400",
   },
-  Banners: {
+  Banner: {
     bg: "from-yellow-500 to-amber-500",
     icon: "from-yellow-400 to-amber-400",
   },
-  Posts: { bg: "from-rose-500 to-pink-500", icon: "from-rose-400 to-pink-400" },
-  "Contact Messages": {
+  Post: { bg: "from-rose-500 to-pink-500", icon: "from-rose-400 to-pink-400" },
+  Message: {
     bg: "from-indigo-500 to-purple-500",
     icon: "from-indigo-400 to-purple-400",
   },
-  Settings: {
+  Widget: {
     bg: "from-green-500 to-emerald-500",
     icon: "from-green-400 to-emerald-400",
   },
+  Candidate: {
+    bg: "from-green-800 to-green-500",
+    icon: "from-green-600 to-green-400",
+  },
+  Job: {
+    bg: "from-blue-500 to-emerald-500",
+    icon: "from-blue-400 to-emerald-400",
+  },
+  Support: {
+    bg: "from-blue-500 to-emerald-500",
+    icon: "from-blue-400 to-emerald-400",
+  },
 };
-
 const menu = [
-  { icon: Home, label: "Dashboard", route: "/dashboard" },
+  { group: "Main", icon: Home, label: "Dashboard", route: "/dashboard" },
 
   {
+    group: "Catalog",
     icon: Box,
-    label: "Products",
+    label: "Product",
     submenu: [
-      { label: "All Products", route: "/products" },
-      { label: "Product Categories", route: "/categories" },
+      { label: "Products list", route: "/products" },
+      { label: "Category", route: "/product-category" },
     ],
   },
 
   {
-    icon: Briefcase,
-    label: "Services",
+    group: "Catalog",
+    icon: Puzzle,
+    label: "Solution",
     submenu: [
-      { label: "All Services", route: "/services" },
-      { label: "Service Categories", route: "/service-categories" },
+      { label: "Solution list", route: "/solutions" },
+      { label: "Category", route: "/solution-category" },
+      { label: "Industry Solution", route: "/industry" },
     ],
   },
 
   {
+    group: "Catalog",
+    icon: Headphones,
+    label: "Support",
+    route: "/support",
+  },
+
+  {
+    group: "People",
     icon: Users,
-    label: "Customers",
+    label: "Customer",
     submenu: [
-      { label: "All Customers", route: "/customers" },
-      { label: "Customer Categories", route: "/customer-categories" },
+      { label: "Customer list", route: "/customers" },
+      { label: "Category", route: "/customer-categories" },
     ],
   },
 
-  { icon: Users, label: "Partners", route: "/partners" },
-  { icon: Image, label: "Banners", route: "/banners" },
+  { group: "People", icon: Handshake, label: "Partner", route: "/partners" },
+
+  { group: "Content", icon: Image, label: "Banner", route: "/banners" },
+  { group: "Content", icon: BriefcaseBusiness, label: "Job", route: "/jobs" },
+  { group: "Content", icon: User, label: "Candidate", route: "/candidate" },
 
   {
+    group: "Content",
     icon: FileText,
-    label: "Posts",
+    label: "Post",
     submenu: [
-      { label: "All Posts", route: "/posts" },
-      { label: "Post Categories", route: "/post-categories" },
-      { label: "Jobs", route: "/jobs" },
+      { label: "Post list", route: "/posts" },
+      { label: "Category", route: "/post-categories" },
     ],
   },
 
-  { icon: Mail, label: "Contact Messages", route: "/contact-messages" },
-  { icon: Settings, label: "Settings", route: "/settings" },
+  {
+    group: "Content",
+    icon: Mail,
+    label: "Message",
+    route: "/contact-messages",
+  },
+
+  {
+    group: "Widget",
+    icon: Settings,
+    label: "Widget",
+    submenu: [
+      { label: "Setting", route: "/settings" },
+      { label: "Widget", route: "/widget" },
+      { label: "Location", route: "/location" },
+      { label: "About", route: "/about_us" },
+      { label: "Join Us", route: "/joinus" },
+    ],
+  },
 ];
+const groupedMenu = menu.reduce((acc, item) => {
+  const group = item.group || "Other";
+  if (!acc[group]) acc[group] = [];
+  acc[group].push(item);
+  return acc;
+}, {});
 
 export default function Sidebar({
   collapsed: collapsedProp,
@@ -217,108 +271,106 @@ export default function Sidebar({
 
           {/* Navigation */}
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-            {menu.map((item) => {
-              const Icon = item.icon;
-              const hasSubmenu = !!item.submenu;
-              const isOpen = openSubmenu === item.label;
-              const active = isItemActive(item);
-              const variant = menuVariants[item.label] || {
-                bg: "from-gray-500 to-gray-600",
-                icon: "from-gray-400 to-gray-500",
-              };
+            {Object.entries(groupedMenu).map(([groupName, items]) => (
+              <div key={groupName} className="mb-6">
+                {/* Group Title */}
+                {!effectiveCollapsed && (
+                  <div className="px-4 mb-2 text-xs font-semibold uppercase text-gray-400">
+                    {groupName}
+                  </div>
+                )}
 
-              return (
-                <div
-                  key={item.label}
-                  ref={(el) => el && (itemRefs.current[item.label] = el)}
-                  onMouseEnter={() =>
-                    effectiveCollapsed && openPreviewFor(item.label)
-                  }
-                  onMouseLeave={() =>
-                    effectiveCollapsed && setHoveredItem(null)
-                  }
-                >
-                  {item.route ? (
-                    <Link
-                      to={item.route}
-                      className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all
-                        ${
-                          active
-                            ? `bg-gradient-to-r ${variant.bg} text-white shadow-md`
-                            : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                        }`}
-                      onClick={onRequestCloseMobile}
-                    >
-                      <div
-                        className={`h-10 w-10 rounded-full bg-gradient-to-br ${variant.icon} flex items-center justify-center shadow-md`}
-                      >
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      {!effectiveCollapsed && (
-                        <span className="font-medium">{item.label}</span>
-                      )}
-                      {effectiveCollapsed && active && (
-                        <div className="absolute left-0 w-1 h-full bg-gradient-to-b from-sky-600 to-indigo-600 rounded-r-full" />
-                      )}
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => toggleSubmenu(item.label)}
-                      className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all
-                        ${
-                          active
-                            ? `bg-gradient-to-r ${variant.bg} text-white shadow-md`
-                            : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`h-10 w-10 rounded-full bg-gradient-to-br ${variant.icon} flex items-center justify-center shadow-md`}
-                        >
-                          <Icon className="w-5 h-5 text-white" />
-                        </div>
-                        {!effectiveCollapsed && (
-                          <span className="font-medium">{item.label}</span>
-                        )}
-                      </div>
-                      {!effectiveCollapsed &&
-                        hasSubmenu &&
-                        (isOpen ? (
-                          <ChevronUp className="h-5 w-5 dark:text-slate-200 cursor-pointer" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5 dark:text-slate-200 cursor-pointer" />
-                        ))}
-                    </button>
-                  )}
+                {items.map((item) => {
+                  const Icon = item.icon;
+                  const hasSubmenu = !!item.submenu;
+                  const isOpen = openSubmenu === item.label;
+                  const active = isItemActive(item);
+                  const variant = menuVariants[item.label] || {
+                    bg: "from-gray-500 to-gray-600",
+                    icon: "from-gray-400 to-gray-500",
+                  };
 
-                  {/* Submenu (only one can be open at a time) */}
-                  {!effectiveCollapsed && hasSubmenu && isOpen && (
-                    <div className="ml-12 mt-1 space-y-1">
-                      {item.submenu.map((sub) => (
+                  return (
+                    <div
+                      key={item.label}
+                      ref={(el) => el && (itemRefs.current[item.label] = el)}
+                      onMouseEnter={() =>
+                        effectiveCollapsed && openPreviewFor(item.label)
+                      }
+                      onMouseLeave={() =>
+                        effectiveCollapsed && setHoveredItem(null)
+                      }
+                    >
+                      {/* MAIN ITEM */}
+                      {item.route ? (
                         <Link
-                          key={sub.route}
-                          to={sub.route}
-                          onClick={() => {
-                            // when navigating, close mobile menu if requested
-                            onRequestCloseMobile && onRequestCloseMobile();
-                            // optionally close submenu after navigation — keep it open for context
-                            // setOpenSubmenu(null);
-                          }}
-                          className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all
-                            ${
-                              location.pathname === sub.route
-                                ? `bg-gradient-to-r ${variant.bg} text-white`
-                                : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
-                            }`}
+                          to={item.route}
+                          onClick={onRequestCloseMobile}
+                          className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                ${
+                  active
+                    ? `bg-gradient-to-r ${variant.bg} text-white shadow-md`
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
+                }`}
                         >
-                          {sub.label}
+                          <div
+                            className={`h-10 w-10 rounded-full bg-gradient-to-br ${variant.icon} flex items-center justify-center`}
+                          >
+                            <Icon className="w-5 h-5 text-white" />
+                          </div>
+                          {!effectiveCollapsed && (
+                            <span className="font-medium">{item.label}</span>
+                          )}
                         </Link>
-                      ))}
+                      ) : (
+                        <button
+                          onClick={() => toggleSubmenu(item.label)}
+                          className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all
+                ${
+                  active
+                    ? `bg-gradient-to-r ${variant.bg} text-white shadow-md`
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200"
+                }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`h-10 w-10 rounded-full bg-gradient-to-br ${variant.icon} flex items-center justify-center`}
+                            >
+                              <Icon className="w-5 h-5 text-white" />
+                            </div>
+                            {!effectiveCollapsed && (
+                              <span className="font-medium">{item.label}</span>
+                            )}
+                          </div>
+                          {!effectiveCollapsed &&
+                            (isOpen ? <ChevronUp /> : <ChevronDown />)}
+                        </button>
+                      )}
+
+                      {/* SUBMENU */}
+                      {!effectiveCollapsed && hasSubmenu && isOpen && (
+                        <div className="ml-12 mt-1 space-y-1">
+                          {item.submenu.map((sub) => (
+                            <Link
+                              key={sub.route}
+                              to={sub.route}
+                              className={`block px-3 py-2 rounded-lg text-sm
+                    ${
+                      location.pathname === sub.route
+                        ? `bg-gradient-to-r ${variant.bg} text-white`
+                        : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                            >
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            ))}
           </nav>
 
           {/* Floating Preview Panel (collapsed mode) */}

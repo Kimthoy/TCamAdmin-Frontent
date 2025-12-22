@@ -1,4 +1,4 @@
-// src/pages/CategoriesPage.jsx
+// src/pages/ProductCategory.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Edit, Trash2, ImageOff } from "lucide-react";
 import { fetchCategories, deleteCategory } from "../api/products";
@@ -15,7 +15,7 @@ function formatDate(iso) {
   }
 }
 
-export default function CategoriesPage() {
+export default function ProductCategory() {
   const [categoriesRaw, setCategoriesRaw] = useState([]); // raw from API response
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

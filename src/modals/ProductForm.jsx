@@ -21,6 +21,7 @@ export default function ProductForm({
   const [shortDesc, setShortDesc] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [website_link, setWebsiteLink] = useState("");
   const [isPublished, setIsPublished] = useState(true);
 
   const [imageFile, setImageFile] = useState(null);
@@ -42,6 +43,7 @@ export default function ProductForm({
     setShortDesc(initial?.short_description || "");
     setDescription(initial?.description || "");
     setPrice(initial?.price || "");
+    setWebsiteLink(initial?.website_link || "");
     setIsPublished(initial?.is_published !== false);
 
     setImageFile(null);
@@ -120,6 +122,7 @@ export default function ProductForm({
     if (shortDesc.trim()) fd.append("short_description", shortDesc.trim());
     if (description.trim()) fd.append("description", description.trim());
     fd.append("price", price);
+    fd.append("website_link", website_link);
     fd.append("is_published", isPublished ? "1" : "0");
     if (imageFile) fd.append("feature_image", imageFile);
 
@@ -292,7 +295,18 @@ export default function ProductForm({
                       className="w-full cursor-pointer px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition shadow-2xl shadow-gray-300 hover:shadow-gray-200  "
                     />
                   </div>
-
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                      Web Site Link
+                    </label>
+                    <input
+                      type="text"
+                      value={website_link}
+                      onChange={(e) => setWebsiteLink(e.target.value)}
+                      placeholder="Noise-cancelling, 30hr battery..."
+                      className="w-full cursor-pointer px-4 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition shadow-2xl shadow-gray-300 hover:shadow-gray-200  "
+                    />
+                  </div>
                   {/* Full Description */}
 
                   {/* Status Toggle */}

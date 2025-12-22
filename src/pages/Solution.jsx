@@ -1,4 +1,4 @@
-// src/pages/ServicesPage.jsx
+// src/pages/Solution.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Edit, Trash2, ImageOff, Layers } from "lucide-react";
 
@@ -11,7 +11,7 @@ import {
 import ServiceForm from "../modals/ServiceForm";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 
-export default function ServicesPage() {
+export default function Solution() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
 

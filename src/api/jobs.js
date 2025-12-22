@@ -1,29 +1,33 @@
-// src/api/jobs.js
 import api from "./index";
 
-/* =========================================================
-   JOBS API (Admin)
-   ========================================================= */
-
-// GET /admin/jobs
+/**
+ * Fetch all jobs with optional query params (pagination, filters, etc.)
+ */
 export const fetchJobs = (params = {}) => {
   return api.get("/admin/jobs", { params });
 };
 
-// GET /admin/jobs/:id
-export const getJob = (id) => {
+/**
+ * Get a single job by ID
+ */
+export const getJobById = (id) => {
   return api.get(`/admin/jobs/${id}`);
 };
 
-// POST /admin/jobs
+/**
+ * Create a new job
+ * @param {Object|FormData} formData
+ */
 export const createJob = (formData) => {
   return api.post("/admin/jobs", formData);
 };
 
-// PUT /admin/jobs/:id  (via POST + _method=PUT)
+/**
+ * Update a job
+ * Supports FormData (with _method = PUT) or plain object
+ */
 export const updateJob = (id, formData) => {
   if (formData instanceof FormData) {
-    // Laravel requires _method=PUT when using FormData
     const fd = new FormData();
     for (const [key, value] of formData.entries()) {
       fd.append(key, value);
@@ -31,21 +35,26 @@ export const updateJob = (id, formData) => {
     fd.append("_method", "PUT");
     return api.post(`/admin/jobs/${id}`, fd);
   }
-  // Fallback for JSON (if no files)
   return api.put(`/admin/jobs/${id}`, formData);
 };
 
-// DELETE /admin/jobs/:id  (soft delete)
+/**
+ * Delete a job (soft delete)
+ */
 export const deleteJob = (id) => {
   return api.delete(`/admin/jobs/${id}`);
 };
 
-// POST /admin/jobs/:id/restore
+/**
+ * Restore a soft-deleted job
+ */
 export const restoreJob = (id) => {
   return api.post(`/admin/jobs/${id}/restore`);
 };
 
-// DELETE /admin/jobs/:id/force  (permanent delete)
+/**
+ * Permanently delete a job (force delete)
+ */
 export const forceDeleteJob = (id) => {
   return api.delete(`/admin/jobs/${id}/force`);
 };

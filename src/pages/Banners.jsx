@@ -22,9 +22,25 @@ import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 const PAGE_OPTIONS = [
   { value: "home", label: "Home", color: "bg-emerald-100 text-emerald-700" },
   { value: "about", label: "About Us", color: "bg-blue-100 text-blue-700" },
-  { value: "services", label: "Services", color: "bg-purple-100 text-purple-700" },
-  { value: "products", label: "Products", color: "bg-orange-100 text-orange-700" },
+  {
+    value: "solutions",
+    label: "Solutions",
+    color: "bg-purple-100 text-purple-700",
+  },
+  {
+    value: "products",
+    label: "Products",
+    color: "bg-orange-100 text-orange-700",
+  },
   { value: "contact", label: "Contact", color: "bg-pink-100 text-pink-700" },
+  {
+    value: "customers",
+    label: "Customer",
+    color: "bg-ember-100 text-amber-700",
+  },
+  { value: "partners", label: "Partner", color: "bg-lime-100 text-lime-700" },
+  { value: "jobs", label: "Job", color: "bg-cyan-100 text-cyan-700" },
+  { value: "events", label: "Event", color: "bg-cyan-100 text-cyan-700" },
   { value: "blog", label: "Blog", color: "bg-indigo-100 text-indigo-700" },
 ];
 
@@ -50,7 +66,9 @@ export default function BannersPage() {
     setError(null);
     try {
       const res = await fetchBanners({ per_page: 100 });
-      const list = Array.isArray(res.data?.data) ? res.data.data : res.data || [];
+      const list = Array.isArray(res.data?.data)
+        ? res.data.data
+        : res.data || [];
       setBannersRaw(list);
     } catch (err) {
       setError("Failed to load banners");
@@ -144,7 +162,9 @@ export default function BannersPage() {
     const option = PAGE_OPTIONS.find((opt) => opt.value === pageValue);
     if (!option) return <span className="text-gray-500 text-xs">Unknown</span>;
     return (
-      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${option.color}`}>
+      <span
+        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${option.color}`}
+      >
         <Globe className="w-3 h-3" />
         {option.label}
       </span>
@@ -239,7 +259,9 @@ export default function BannersPage() {
                           <div className="mx-auto w-20 h-20 mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                             <ImageOff className="w-10 h-10 text-gray-400" />
                           </div>
-                          <h3 className="text-lg font-medium">No banners found</h3>
+                          <h3 className="text-lg font-medium">
+                            No banners found
+                          </h3>
                           <p className="mt-2 text-sm">
                             Create your first banner or adjust your search.
                           </p>
@@ -251,7 +273,9 @@ export default function BannersPage() {
                       <tr
                         key={b.id}
                         className={`transition-all hover:bg-gray-50 dark:hover:bg-gray-700/40 ${
-                          idx % 2 === 0 ? "bg-white dark:bg-gray-800" : "bg-gray-10 dark:bg-gray-800/50"
+                          idx % 2 === 0
+                            ? "bg-white dark:bg-gray-800"
+                            : "bg-gray-10 dark:bg-gray-800/50"
                         }`}
                       >
                         {/* Preview */}
@@ -264,7 +288,8 @@ export default function BannersPage() {
                                 className="w-full h-full object-cover"
                                 loading="lazy"
                                 onError={(e) => {
-                                  e.currentTarget.src = "/images/placeholder.png";
+                                  e.currentTarget.src =
+                                    "/images/placeholder.png";
                                 }}
                               />
                             ) : (
@@ -279,7 +304,11 @@ export default function BannersPage() {
                         <td className="px-6 py-4">
                           <div className="max-w-md">
                             <div className="font-semibold text-gray-900 dark:text-white">
-                              {b.title || <span className="text-gray-400 italic">No title</span>}
+                              {b.title || (
+                                <span className="text-gray-400 italic">
+                                  No title
+                                </span>
+                              )}
                             </div>
                             {b.subtitle && (
                               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
@@ -303,7 +332,9 @@ export default function BannersPage() {
                               rel="noreferrer"
                               className="text-emerald-600 dark:text-emerald-400 hover:underline break-all"
                             >
-                              {b.link.length > 40 ? `${b.link.substring(0, 40)}...` : b.link}
+                              {b.link.length > 40
+                                ? `${b.link.substring(0, 40)}...`
+                                : b.link}
                             </a>
                           ) : (
                             "—"
@@ -359,7 +390,8 @@ export default function BannersPage() {
             <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm">
               <div className="text-gray-600 dark:text-gray-400">
                 Showing {(page - 1) * PAGE_SIZE + 1} to{" "}
-                {Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length} banners
+                {Math.min(page * PAGE_SIZE, filtered.length)} of{" "}
+                {filtered.length} banners
               </div>
               <div className="flex items-center gap-2">
                 <button
