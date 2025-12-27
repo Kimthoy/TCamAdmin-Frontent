@@ -28,8 +28,8 @@ const PAGE_OPTIONS = [
     color: "bg-purple-100 text-purple-700",
   },
   {
-    value: "products",
-    label: "Products",
+    value: "services",
+    label: "Service",
     color: "bg-orange-100 text-orange-700",
   },
   { value: "contact", label: "Contact", color: "bg-pink-100 text-pink-700" },

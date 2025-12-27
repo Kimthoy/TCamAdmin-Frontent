@@ -4,7 +4,7 @@ import {
   Home,
   Users,
   Box,
-  Briefcase,
+  CalendarClock,
   Image,
   FileText,
   Mail,
@@ -73,8 +73,12 @@ const menuVariants = {
     bg: "from-blue-500 to-emerald-500",
     icon: "from-blue-400 to-emerald-400",
   },
+  Event: {
+    bg: "from-blue-500 to-emerald-500",
+    icon: "from-blue-400 to-emerald-400",
+  },
 };
-const menu = [
+export const menu = [
   { group: "Main", icon: Home, label: "Dashboard", route: "/dashboard" },
 
   {
@@ -118,6 +122,7 @@ const menu = [
   { group: "People", icon: Handshake, label: "Partner", route: "/partners" },
 
   { group: "Content", icon: Image, label: "Banner", route: "/banners" },
+  { group: "Content", icon: CalendarClock, label: "Event", route: "/events" },
   { group: "Content", icon: BriefcaseBusiness, label: "Job", route: "/jobs" },
   { group: "Content", icon: User, label: "Candidate", route: "/candidate" },
 
@@ -241,16 +246,16 @@ export default function Sidebar({
           {/* Header */}
           <div className="h-20 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center rounded-lg h-11 w-11 bg-gradient-to-br from-sky-600 to-indigo-600 text-white font-bold text-xl">
-                T
+              <div className="flex items-center justify-center rounded-lg h-12 w-12 font-bold text-xl">
+                <img src="logo-removebg.png" alt="" />
               </div>
               {!effectiveCollapsed && (
                 <div>
                   <div className="font-bold text-xl text-[#1C1B1B] dark:text-white">
-                    TCAM Solution
+                    TCAM
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Admin Panel
+                    Admin
                   </div>
                 </div>
               )}

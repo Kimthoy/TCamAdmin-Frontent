@@ -98,16 +98,20 @@ export default function AdminAboutUs() {
 
   const closeModal = () => setModalOpen(false);
 
-  // Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const dataToSend = new FormData();
+
       Object.entries(formData).forEach(([key, value]) => {
         if (key === "operational_offices") {
           dataToSend.append(key, JSON.stringify(value));
-        } else if (key === "company_image" && value) {
-          dataToSend.append(key, value);
+        } else if (key === "company_image") {
+          // Only append new file if selected
+          if (value instanceof File) {
+            dataToSend.append(key, value);
+          }
+          // Otherwise, do nothing to keep existing image
         } else {
           dataToSend.append(key, value ?? "");
         }
@@ -279,52 +283,97 @@ export default function AdminAboutUs() {
                 <h3 className="col-span-2 text-lg font-semibold mb-2">
                   Basic Info
                 </h3>
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                  required
-                />
-                <input
-                  type="file"
-                  name="company_image"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
-                {preview && (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-32 h-20 object-cover rounded col-span-2"
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="title"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Title <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full"
+                    required
                   />
-                )}
-                <input
-                  type="number"
-                  name="founding_year"
-                  placeholder="Founding Year"
-                  value={formData.founding_year}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="founders_info"
-                  placeholder="Founders Info"
-                  value={formData.founders_info}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
-                <textarea
-                  name="intro_text"
-                  placeholder="Intro Text"
-                  value={formData.intro_text}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full h-32 col-span-2"
-                />
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="founding_year"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Founding Year
+                  </label>
+                  <input
+                    id="founding_year"
+                    type="number"
+                    name="founding_year"
+                    value={formData.founding_year}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="company_image"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Photo
+                  </label>
+                  <input
+                    id="company_image"
+                    type="file"
+                    name="company_image"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="border border-slate-300 rounded p-2 w-full"
+                  />
+                  {preview && (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="w-32 h-20 object-cover rounded mt-2"
+                    />
+                  )}
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="founders_info"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Founder Info
+                  </label>
+                  <textarea
+                    id="founders_info"
+                    name="founders_info"
+                    value={formData.founders_info}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full h-32"
+                  />
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="intro_text"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Introduction
+                  </label>
+                  <textarea
+                    id="intro_text"
+                    name="intro_text"
+                    value={formData.intro_text}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full h-32"
+                  />
+                </div>
               </div>
 
               {/* Operational Info */}
@@ -332,53 +381,130 @@ export default function AdminAboutUs() {
                 <h3 className="col-span-2 text-lg font-semibold mb-2">
                   Operational Info
                 </h3>
-                <input
-                  type="text"
-                  name="operational_offices"
-                  placeholder="Operational Offices (comma separated)"
-                  value={formData.operational_offices.join(", ")}
-                  onChange={handleOfficesChange}
-                  className="border border-slate-300 rounded p-2 w-full col-span-2"
-                />
-                <input
-                  type="number"
-                  name="project_count"
-                  placeholder="Project Count"
-                  value={formData.project_count}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="operational_offices"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Operational Offices (comma separated)
+                  </label>
+                  <input
+                    id="operational_offices"
+                    type="text"
+                    name="operational_offices"
+                    value={formData.operational_offices.join(", ")}
+                    onChange={handleOfficesChange}
+                    className="border border-slate-300 rounded p-2 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="project_count"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Project Count
+                  </label>
+                  <input
+                    id="project_count"
+                    type="number"
+                    name="project_count"
+                    value={formData.project_count}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="services_description"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Services Description
+                  </label>
+                  <textarea
+                    id="services_description"
+                    name="services_description"
+                    value={formData.services_description}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full h-24"
+                  />
+                </div>
+
+                <div className="flex flex-col col-span-2">
+                  <label
+                    htmlFor="company_profile"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Company Profile
+                  </label>
+                  <textarea
+                    id="company_profile"
+                    name="company_profile"
+                    value={formData.company_profile}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full h-24"
+                  />
+                </div>
               </div>
 
               {/* Vision & Mission */}
-              <div className="grid md:grid-cols-3 gap-4 border border-slate-300 p-4 rounded-lg">
+              <div className="block border border-slate-300 p-4 rounded-lg">
                 <h3 className="col-span-3 text-lg font-semibold mb-2">
-                  Vision & Mission
+                  Vision & Mission & value
                 </h3>
-                <input
-                  type="text"
-                  name="vision"
-                  placeholder="Vision"
-                  value={formData.vision}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="mission"
-                  placeholder="Mission"
-                  value={formData.mission}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
-                <input
-                  type="text"
-                  name="value_proposition"
-                  placeholder="Value Proposition"
-                  value={formData.value_proposition}
-                  onChange={handleChange}
-                  className="border border-slate-300 rounded p-2 w-full"
-                />
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="vision"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Vision
+                  </label>
+                  <textarea
+                    id="vision"
+                    type="text"
+                    name="vision"
+                    value={formData.vision}
+                    onChange={handleChange}
+                    className="border border-slate-300 rounded p-2 w-full h-32"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="mission"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Mission
+                  </label>
+                  <textarea
+                    id="mission"
+                    type="text"
+                    name="mission"
+                    value={formData.mission}
+                    onChange={handleChange}
+                    className="border border-slate-300 h-32 rounded p-2 w-full"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label
+                    htmlFor="value_proposition"
+                    className="mb-1 font-medium text-gray-700"
+                  >
+                    Value Proposition
+                  </label>
+                  <textarea
+                    id="value_proposition"
+                    type="text"
+                    name="value_proposition"
+                    value={formData.value_proposition}
+                    onChange={handleChange}
+                    className="border border-slate-300 h-32 rounded p-2 w-full"
+                  />
+                </div>
               </div>
 
               {/* Submit buttons */}

@@ -18,6 +18,10 @@ import ResetPasswordModal from "../modals/ResetPasswordModal";
 import NotificationBell from "./NotificationBell";
 import { ShieldUser } from "lucide-react";
 
+import { menu } from "../components/Sidebar";
+import DateTime from "../components/DateTime";
+import Search from "../components/Search";
+
 export function Header({ onToggleSidebar }) {
   const { effectiveIsDark, toggleTheme } = useTheme();
 
@@ -122,19 +126,21 @@ export function Header({ onToggleSidebar }) {
           >
             <MenuIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
-
-          <div className="hidden md:flex items-baseline gap-2">
-            <h2 className="text-xl font-semibold text-[#1C1B1B] dark:text-white">
-              Dashboard
-            </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              / Overview
-            </span>
-          </div>
         </div>
-
+        <Search menu={menu} />
         <div className="flex-1" />
-
+        <DateTime
+          formatOptions={{
+            weekday: "long", // Monday, Tuesday, etc.
+            month: "long", // December, January, etc.
+            year: "numeric", // full year, e.g., 2025
+            day: "numeric", // 26, 27, etc.
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true, // optional, 24-hour format
+          }}
+        />
         {/* Right side */}
         <div className="flex items-center gap-3 ">
           <Button

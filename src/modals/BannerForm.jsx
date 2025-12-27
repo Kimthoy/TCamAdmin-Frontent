@@ -16,7 +16,7 @@ const PAGE_OPTIONS = [
   { value: "home", label: "Home" },
   { value: "about", label: "About Us" },
   { value: "solutions", label: "Solution" },
-  { value: "products", label: "Product" },
+  { value: "services", label: "Service" },
   { value: "contact", label: "Contact" },
   { value: "partners", label: "Partner" },
   { value: "customers", label: "Customer" },

@@ -209,12 +209,13 @@ export default function JoinUs() {
       </div>
 
       {/* Modal */}
+      {/* Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative">
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-start z-50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-5xl p-6  h-screen overflow-y-auto relative">
             <button
               onClick={closeModal}
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              className=" sticky -top-6 -left-12 bg-slate-200 font-semibold text-emerald-700 w-7 h-7 rounded-full hover:text-red-300 hover:cursor-pointer"
             >
               ✕
             </button>
@@ -223,6 +224,7 @@ export default function JoinUs() {
             </h2>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Form fields */}
               <div className="flex gap-4">
                 <input
                   name="section_tag"
@@ -271,9 +273,9 @@ export default function JoinUs() {
               {/* Items */}
               <div>
                 <h3 className="font-semibold">Items</h3>
-                <div className="space-y-2  h-72 overflow-x-scroll">
+                <div className="space-y-2 max-h-80 overflow-y-auto border p-2 rounded">
                   {formData.items.map((item, idx) => (
-                    <div key={idx} className="flex gap-2 items-center ">
+                    <div key={idx} className="flex gap-2 items-center">
                       <select
                         value={item.icon}
                         onChange={(e) =>
@@ -319,14 +321,15 @@ export default function JoinUs() {
                 <button
                   type="button"
                   onClick={addItem}
-                  className="bg-green-500 text-white  py-5 text-center rounded mt-2"
+                  className="bg-green-500 hover:bg-green-600 sticky bottom-5 text-white py-2 px-4 rounded-full cursor-pointer mt-2"
                 >
                   Add Item
                 </button>
               </div>
+
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-6 py-5 rounded mt-4 hover:bg-blue-700 transition"
+                className=" sticky -bottom-6 bg-emerald-700 text-slate-200 px-6 py-2 rounded-full cursor-pointer mt-4 hover:bg-emerald-800 transition"
               >
                 {editingId ? "Update Section" : "Create Section"}
               </button>

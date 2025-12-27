@@ -29,6 +29,7 @@ import AdminSupportPage from "./pages/AdminSupportPage";
 import AdminLocationPage from "./pages/AdminLocationPage";
 import Industry from "./pages/Industry";
 import JoinUs from "./pages/JoinUs";
+import EventAdmin from "./pages/Event";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
         <Route path="contact-messages" element={<ContactMessagesPage />} />
         {/* Posts */}
         <Route path="posts" element={<PostsPage />} />
+        <Route path="events" element={<EventAdmin />} />
         <Route path="posts/create" element={<PostCreatePage />} />
         <Route path="posts/:id/edit" element={<PostEditPage />} />
         <Route path="post-categories" element={<PostCategoriesPage />} />

@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom"; // ← This renders the page content
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import Breadcrumb from "../components/Breadcrumb";
+import { menu } from "../components/Sidebar";
 
 export function Layout() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -25,6 +27,9 @@ export function Layout() {
 
         {/* Main Content - ONLY THIS PART CHANGES */}
         <main className="flex-1 overflow-auto p-4 md:p-6">
+          <div className="flex justify-start items-center my-3">
+            <Breadcrumb menu={menu} />
+          </div>
           <Outlet /> {/* ← Dashboard or Banners appears here */}
         </main>
       </div>
