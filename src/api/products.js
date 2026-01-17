@@ -78,3 +78,9 @@ export const forceDeleteProduct = (id) => {
 export const toggleProductPublish = (id) => {
   return api.patch(`/admin/products/${id}/toggle-publish`);
 };
+export default {
+  fetchProducts,
+  fetchCategories,
+  restoreProduct,
+  toggleProductPublish,
+};

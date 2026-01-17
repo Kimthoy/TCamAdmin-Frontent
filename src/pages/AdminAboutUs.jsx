@@ -7,7 +7,7 @@ import {
   updateAboutUs,
   deleteAboutUs,
 } from "../api/about";
-import { SquarePen, Trash2, Plus } from "lucide-react";
+import { PenBoxIcon, Trash, CopyPlus } from "lucide-react";
 
 export default function AdminAboutUs() {
   const [abouts, setAbouts] = useState([]);
@@ -161,10 +161,11 @@ export default function AdminAboutUs() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">About Us</h1>
         <button
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+          title="Add new about us"
+          className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-200 hover:text-blue-500 bg-blue-600 text-white px-4 py-2 rounded shadow "
           onClick={() => openModal()}
         >
-          <Plus className="w-4 h-4" /> Add New
+          <CopyPlus className="w-4 h-4" /> Add
         </button>
       </div>
 
@@ -233,22 +234,18 @@ export default function AdminAboutUs() {
                     </td>
                     <td className="px-6 py-5 text-center flex justify-center gap-4">
                       <motion.button
-                        whileHover={{ scale: 1.2, rotate: 10 }}
-                        whileTap={{ scale: 0.9 }}
                         onClick={() => openModal(about)}
-                        className="p-3 rounded-lg bg-yellow-100 text-yellow-600 hover:bg-yellow-200 shadow-lg"
-                        title="Edit"
+                        className="p-3 rounded-lg cursor-pointer bg-yellow-500 text-white hover:text-yellow-500 transition-all hover:bg-yellow-200 shadow-lg"
+                        title="Edit about us"
                       >
-                        <SquarePen size={20} />
+                        <PenBoxIcon size={20} />
                       </motion.button>
                       <motion.button
-                        whileHover={{ scale: 1.2, rotate: -10 }}
-                        whileTap={{ scale: 0.9 }}
                         onClick={() => handleDelete(about)}
-                        className="p-3 rounded-lg bg-red-100 text-red-600 hover:bg-red-200 shadow-lg"
-                        title="Delete"
+                        className="p-3 rounded-lg bg-red-500 cursor-pointer text-white transition-all hover:text-red-500 hover:bg-red-200  shadow-lg"
+                        title="Delete about us"
                       >
-                        <Trash2 size={20} />
+                        <Trash size={20} />
                       </motion.button>
                     </td>
                   </motion.tr>
@@ -273,7 +270,7 @@ export default function AdminAboutUs() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl p-6 overflow-auto max-h-[90vh]">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-7xl p-6 overflow-auto max-h-[95vh]">
             <h2 className="text-2xl font-bold mb-4">
               {editing ? "Edit About Us" : "Create About Us"}
             </h2>
@@ -297,7 +294,7 @@ export default function AdminAboutUs() {
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                     required
                   />
                 </div>
@@ -315,7 +312,7 @@ export default function AdminAboutUs() {
                     name="founding_year"
                     value={formData.founding_year}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full"
+                    className="border border-slate-300  p-2 w-full focus:bg-slate-200 rounded-xl px-3"
                   />
                 </div>
 
@@ -332,13 +329,13 @@ export default function AdminAboutUs() {
                     name="company_image"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="border border-slate-300 rounded p-2 w-full"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                   />
                   {preview && (
                     <img
                       src={preview}
                       alt="Preview"
-                      className="w-32 h-20 object-cover rounded mt-2"
+                      className="w-32 h-20 object-cover focus:bg-slate-200 rounded-xl px-3 mt-2"
                     />
                   )}
                 </div>
@@ -355,7 +352,7 @@ export default function AdminAboutUs() {
                     name="founders_info"
                     value={formData.founders_info}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full h-32"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
                   />
                 </div>
 
@@ -371,7 +368,7 @@ export default function AdminAboutUs() {
                     name="intro_text"
                     value={formData.intro_text}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full h-32"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
                   />
                 </div>
               </div>
@@ -395,7 +392,7 @@ export default function AdminAboutUs() {
                     name="operational_offices"
                     value={formData.operational_offices.join(", ")}
                     onChange={handleOfficesChange}
-                    className="border border-slate-300 rounded p-2 w-full"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                   />
                 </div>
 
@@ -412,7 +409,7 @@ export default function AdminAboutUs() {
                     name="project_count"
                     value={formData.project_count}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                   />
                 </div>
 
@@ -428,7 +425,7 @@ export default function AdminAboutUs() {
                     name="services_description"
                     value={formData.services_description}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full h-24"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-24"
                   />
                 </div>
 
@@ -444,7 +441,7 @@ export default function AdminAboutUs() {
                     name="company_profile"
                     value={formData.company_profile}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full h-24"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-24"
                   />
                 </div>
               </div>
@@ -468,7 +465,7 @@ export default function AdminAboutUs() {
                     name="vision"
                     value={formData.vision}
                     onChange={handleChange}
-                    className="border border-slate-300 rounded p-2 w-full h-32"
+                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
                   />
                 </div>
 
@@ -485,7 +482,7 @@ export default function AdminAboutUs() {
                     name="mission"
                     value={formData.mission}
                     onChange={handleChange}
-                    className="border border-slate-300 h-32 rounded p-2 w-full"
+                    className="border border-slate-300 h-32 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                   />
                 </div>
 
@@ -502,7 +499,7 @@ export default function AdminAboutUs() {
                     name="value_proposition"
                     value={formData.value_proposition}
                     onChange={handleChange}
-                    className="border border-slate-300 h-32 rounded p-2 w-full"
+                    className="border border-slate-300 h-32 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
                   />
                 </div>
               </div>
@@ -511,14 +508,14 @@ export default function AdminAboutUs() {
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-400 text-white rounded"
+                  className="px-4 py-2 cursor-pointer hover:bg-red-200 hover:text-red-500 transition-all bg-gray-400 text-white rounded"
                   onClick={closeModal}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                  className="px-4 py-2 bg-blue-600 cursor-pointer hover:bg-blue-200 transition-all hover:text-blue-500 text-white rounded"
                 >
                   {editing ? "Update" : "Create"}
                 </button>

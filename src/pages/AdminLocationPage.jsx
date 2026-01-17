@@ -5,8 +5,19 @@ import {
   createLocation,
   updateLocation,
   deleteLocation,
+  deleteOffice,
+  deleteEmail,
+  deletePhone,
+  deleteWebsite,
 } from "../api/location";
-import { CopyX, Trash, PlusSquare } from "lucide-react";
+import {
+  CopyX,
+  Trash,
+  CopyPlus,
+  Building,
+  PenBoxIcon,
+  SaveAll,
+} from "lucide-react";
 
 export default function AdminLocationPage() {
   const [countries, setCountries] = useState([]);
@@ -151,42 +162,45 @@ export default function AdminLocationPage() {
       );
     }
   };
-
   // Edit
   const handleEdit = (country) => {
     setForm({
-      country_name: country.country_name,
+      country_name: country.country_name || "",
       icon_color: country.icon_color || "",
       display_order: country.display_order || 0,
       is_active: country.is_active ?? true,
       offices: country.offices.map((office) => ({
         id: office.id,
-        office_name: office.office_name,
-        address: office.address,
+        office_name: office.office_name || "",
+        address: office.address || "",
         city: office.city || "",
         province: office.province || "",
-        phones: office.phones.length
-          ? office.phones.map((p) => ({
-              id: p.id,
-              phone_number: p.phone_number,
-              label: p.label,
-            }))
-          : [{ phone_number: "", label: "" }],
-        emails: office.emails.length
-          ? office.emails.map((e) => ({
-              id: e.id,
-              email_address: e.email_address,
-              label: e.label,
-            }))
-          : [{ email_address: "", label: "" }],
-        websites: office.websites.length
-          ? office.websites.map((w) => ({
-              id: w.id,
-              website_url: w.website_url,
-            }))
-          : [{ website_url: "" }],
+        phones:
+          office.phones.length > 0
+            ? office.phones.map((p) => ({
+                id: p.id,
+                phone_number: p.phone_number || "",
+                label: p.label || "",
+              }))
+            : [{ phone_number: "", label: "" }],
+        emails:
+          office.emails.length > 0
+            ? office.emails.map((e) => ({
+                id: e.id,
+                email_address: e.email_address || "",
+                label: e.label || "",
+              }))
+            : [{ email_address: "", label: "" }],
+        websites:
+          office.websites.length > 0
+            ? office.websites.map((w) => ({
+                id: w.id,
+                website_url: w.website_url || "",
+              }))
+            : [{ website_url: "" }],
       })),
     });
+
     setEditingId(country.id);
     openModal();
   };
@@ -200,14 +214,131 @@ export default function AdminLocationPage() {
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
     });
+
     if (confirm.isConfirmed) {
-      await deleteLocation(id);
-      Swal.fire(
-        "Deleted!",
-        "Country and offices deleted successfully.",
-        "success"
-      );
-      loadLocations();
+      try {
+        console.log("Deleting id:", id); // Debug
+        await deleteLocation(id);
+        Swal.fire("Deleted!", "Country deleted successfully.", "success");
+        loadLocations();
+      } catch (err) {
+        Swal.fire(
+          "Error!",
+          err.response?.data?.message || "Failed to delete",
+          "error"
+        );
+        console.error(err.response || err);
+      }
+    }
+  };
+  const handleDeleteOffice = async (officeId, countryId) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete the office!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await deleteOffice(officeId);
+        Swal.fire("Deleted!", "Office deleted successfully.", "success");
+        // Reload countries to reflect change
+        loadLocations();
+      } catch (err) {
+        Swal.fire(
+          "Error!",
+          err.response?.data?.message || "Failed to delete office",
+          "error"
+        );
+        console.error(err.response || err);
+      }
+    }
+  };
+
+  const handleDeleteEmail = async (emailId, officeIndex, emailIndex) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete the email!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        if (emailId) {
+          await deleteEmail(emailId);
+        }
+        // Remove from state
+        const newOffices = [...form.offices];
+        newOffices[officeIndex].emails.splice(emailIndex, 1);
+        setForm({ ...form, offices: newOffices });
+
+        Swal.fire("Deleted!", "Email deleted successfully.", "success");
+      } catch (err) {
+        Swal.fire(
+          "Error!",
+          err.response?.data?.message || "Failed to delete email",
+          "error"
+        );
+        console.error(err.response || err);
+      }
+    }
+  };
+
+  const handleDeletePhone = async (phoneId, officeIndex, phoneIndex) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete the phone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        if (phoneId) await deletePhone(phoneId);
+        const newOffices = [...form.offices];
+        newOffices[officeIndex].phones.splice(phoneIndex, 1);
+        setForm({ ...form, offices: newOffices });
+        Swal.fire("Deleted!", "Phone deleted successfully.", "success");
+      } catch (err) {
+        Swal.fire(
+          "Error!",
+          err.response?.data?.message || "Failed to delete phone",
+          "error"
+        );
+        console.error(err.response || err);
+      }
+    }
+  };
+
+  const handleDeleteWebsite = async (websiteId, officeIndex, websiteIndex) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This will delete the website!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        if (websiteId) await deleteWebsite(websiteId);
+        const newOffices = [...form.offices];
+        newOffices[officeIndex].websites.splice(websiteIndex, 1);
+        setForm({ ...form, offices: newOffices });
+        Swal.fire("Deleted!", "Website deleted successfully.", "success");
+      } catch (err) {
+        Swal.fire(
+          "Error!",
+          err.response?.data?.message || "Failed to delete website",
+          "error"
+        );
+        console.error(err.response || err);
+      }
     }
   };
 
@@ -217,21 +348,32 @@ export default function AdminLocationPage() {
 
       <button
         onClick={openModal}
-        className="bg-blue-600 flex  text-white px-4 py-2 rounded mb-4 hover:bg-blue-700 cursor-pointer hover:underline"
+        className="bg-blue-600 flex  gap-2 rounded-xl    text-white px-4 py-2 rounded-full-full mb-4 hover:bg-blue-200 cursor-pointer hover:text-blue-500 transition-all"
       >
-        <PlusSquare /> Add Country
+        <CopyPlus /> Add
       </button>
 
       {/* Country Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex justify-center items-start pt-10 z-50">
-          <div className="bg-white rounded-2xl shadow-lg w-full max-w-4xl p-6 overflow-y-auto max-h-[90vh]">
+        <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex justify-center  items-center  z-50">
+          <div className="bg-white rounded-2xl shadow w-full max-w-6xl p-6 overflow-y-auto max-h-[95vh]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">
-                {editingId ? "Edit Country" : "Add Country"}
-              </h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-bold ">
+                  {editingId ? "Edit Country" : "Add Country"}
+                </h2>
+                <button
+                  type="button"
+                  onClick={handleAddOffice}
+                  className="text-blue-500 gap-2 border px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-blue-200 hover:text-blue-500 flex "
+                >
+                  <CopyPlus /> Add Office
+                </button>
+              </div>
+
               <button
                 onClick={closeModal}
+                title="Close"
                 className="text-gray-500 hover:text-red-800 font-bold cursor-pointer hover:underline"
               >
                 <CopyX />
@@ -245,7 +387,7 @@ export default function AdminLocationPage() {
                 placeholder="Country Name"
                 value={form.country_name}
                 onChange={handleCountryChange}
-                className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                 required
               />
               <input
@@ -254,23 +396,39 @@ export default function AdminLocationPage() {
                 placeholder="Icon Color"
                 value={form.icon_color}
                 onChange={handleCountryChange}
-                className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                className="border-2 p-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
               />
 
               {form.offices.map((office, idx) => (
                 <div
                   key={idx}
-                  className=" mt-3 border-2 p-2 rounded-lg w-full border-slate-200 space-y-3"
+                  className=" mt-3  p-2 w-full border-slate-200 space-y-3"
                 >
+                  <hr className="h-1 border-0 rounded-full bg-gradient-to-r from-emerald-300 via-emerald-400 to-green-400 my-6 shadow-lg" />
+
                   <div className="flex justify-between items-center mb-2 ">
-                    <h3 className="font-semibold">Office {idx + 1}</h3>
+                    <h3
+                      className="font-semibold flex items-center gap-2 border-l-4 border-emerald-600 
+               px-4 py-3 bg-gradient-to-r from-emerald-200 to-green-400 rounded-lg shadow"
+                    >
+                      <Building className="w-5 h-5 text-emerald-600" />
+                      Office #{idx + 1}
+                    </h3>
+
                     {form.offices.length > 1 && (
                       <button
                         type="button"
-                        onClick={() => handleRemoveOffice(idx)}
-                        className="text-red-500 cursor-pointer hover:underline flex "
+                        title="Delete office"
+                        onClick={() => {
+                          if (office.id) {
+                            handleDeleteOffice(office.id, editingId);
+                          } else {
+                            handleRemoveOffice(idx); // For new unsaved office
+                          }
+                        }}
+                        className="text-red-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-red-200 hover:text-red-500 flex "
                       >
-                        <Trash /> Delete
+                        <Trash /> Delete Office
                       </button>
                     )}
                   </div>
@@ -282,7 +440,7 @@ export default function AdminLocationPage() {
                     onChange={(e) =>
                       handleOfficeChange(idx, "office_name", e.target.value)
                     }
-                    className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                    className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                     required
                   />
                   <input
@@ -292,7 +450,7 @@ export default function AdminLocationPage() {
                     onChange={(e) =>
                       handleOfficeChange(idx, "address", e.target.value)
                     }
-                    className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                    className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                     required
                   />
                   <input
@@ -302,7 +460,7 @@ export default function AdminLocationPage() {
                     onChange={(e) =>
                       handleOfficeChange(idx, "city", e.target.value)
                     }
-                    className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                    className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                   />
                   <input
                     type="text"
@@ -311,58 +469,64 @@ export default function AdminLocationPage() {
                     onChange={(e) =>
                       handleOfficeChange(idx, "province", e.target.value)
                     }
-                    className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                    className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                   />
 
                   {/* Phones */}
                   <div className="mb-2">
                     <label className="font-semibold">Phones:</label>
                     {office.phones.map((p, i) => (
-                      <div key={i} className="flex gap-2 mb-1">
-                        <input
-                          type="text"
-                          placeholder="Phone Number"
-                          value={p.phone_number}
-                          onChange={(ev) => {
-                            const newPhones = [...office.phones];
-                            newPhones[i] = {
-                              ...newPhones[i],
-                              phone_number: ev.target.value,
-                            };
-                            handleOfficeChange(idx, "phones", newPhones);
-                          }}
-                          className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Label"
-                          value={p.label}
-                          onChange={(ev) => {
-                            const newPhones = [...office.phones];
-                            newPhones[i] = {
-                              ...newPhones[i],
-                              label: ev.target.value,
-                            };
-                            handleOfficeChange(idx, "phones", newPhones);
-                          }}
-                          className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
-                        />
+                      <div key={i} className="flex gap-2 mb-1 items-center">
+                        <div className="flex w-full gap-2">
+                          <input
+                            type="text"
+                            placeholder="Phone Number"
+                            value={p.phone_number}
+                            onChange={(ev) => {
+                              const newPhones = [...office.phones];
+                              newPhones[i] = {
+                                ...newPhones[i],
+                                phone_number: ev.target.value,
+                              };
+                              handleOfficeChange(idx, "phones", newPhones);
+                            }}
+                            className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Label"
+                            value={p.label}
+                            onChange={(ev) => {
+                              const newPhones = [...office.phones];
+                              newPhones[i] = {
+                                ...newPhones[i],
+                                label: ev.target.value,
+                              };
+                              handleOfficeChange(idx, "phones", newPhones);
+                            }}
+                            className="border-2 p-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                          />
+                        </div>
                         <button
                           type="button"
-                          onClick={() => handleRemoveField(idx, "phones", i)}
-                          className="text-red-500 cursor-pointer hover:underline flex"
+                          title="Delete phone number"
+                          onClick={() => {
+                            const phoneId = p.id;
+                            handleDeletePhone(phoneId, idx, i);
+                          }}
+                          className="text-red-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-red-200 hover:text-red-500 flex "
                         >
-                          <Trash />
-                          Delete
+                          <Trash /> Delete
                         </button>
                       </div>
                     ))}
                     <button
                       type="button"
+                      title="Add new phone number"
                       onClick={() => handleAddField(idx, "phones")}
-                      className="text-green-500 cursor-pointer hover:underline"
+                      className="text-green-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-green-200 hover:text-green-500 flex "
                     >
-                      Add Phone
+                      <CopyPlus /> Add
                     </button>
                   </div>
 
@@ -370,7 +534,7 @@ export default function AdminLocationPage() {
                   <div className="mb-2">
                     <label className="font-semibold">Emails:</label>
                     {office.emails.map((e, i) => (
-                      <div key={i} className="flex gap-2 mb-1">
+                      <div key={i} className="flex gap-2 mb-1 items-center">
                         <input
                           type="email"
                           placeholder="Email Address"
@@ -383,7 +547,7 @@ export default function AdminLocationPage() {
                             };
                             handleOfficeChange(idx, "emails", newEmails);
                           }}
-                          className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                          className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                         />
                         <input
                           type="text"
@@ -397,12 +561,15 @@ export default function AdminLocationPage() {
                             };
                             handleOfficeChange(idx, "emails", newEmails);
                           }}
-                          className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                          className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                         />
                         <button
                           type="button"
-                          onClick={() => handleRemoveField(idx, "emails", i)}
-                          className="text-red-500 cursor-pointer hover:underline flex"
+                          onClick={() => {
+                            const emailId = office.emails[i].id;
+                            handleDeleteEmail(emailId, idx, i);
+                          }}
+                          className="text-red-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-red-200 hover:text-red-500 flex "
                         >
                           <Trash />
                           Delete
@@ -411,10 +578,11 @@ export default function AdminLocationPage() {
                     ))}
                     <button
                       type="button"
+                      title="Add new email"
                       onClick={() => handleAddField(idx, "emails")}
-                      className="text-green-500 cursor-pointer hover:underline flex "
+                      className="text-green-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-green-200 hover:text-green-500 flex "
                     >
-                      <PlusSquare /> Add Email
+                      <CopyPlus /> Add
                     </button>
                   </div>
 
@@ -422,7 +590,7 @@ export default function AdminLocationPage() {
                   <div className="mb-2">
                     <label className="font-semibold">Websites:</label>
                     {office.websites.map((w, i) => (
-                      <div key={i} className="flex gap-2 mb-1">
+                      <div key={i} className="flex gap-2 mb-1 items-center">
                         <input
                           type="text"
                           placeholder="Website URL"
@@ -435,48 +603,46 @@ export default function AdminLocationPage() {
                             };
                             handleOfficeChange(idx, "websites", newWebsites);
                           }}
-                          className="border-2 p-2 rounded-lg w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
+                          className="border-2 focus:bg-slate-200 focus:text-slate-600 focus:shadow p-2 rounded-full w-full border-slate-200 shadow text-slate-500 font-semibold pl-4 py-3 my-2"
                         />
                         <button
                           type="button"
-                          onClick={() => handleRemoveField(idx, "websites", i)}
-                          className="text-red-500 cursor-pointer hover:underline flex "
+                          title="Delete email"
+                          onClick={() => {
+                            const websiteId = w.id;
+                            handleDeleteWebsite(websiteId, idx, i);
+                          }}
+                          className="text-red-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-red-200 hover:text-red-500 flex "
                         >
-                          <Trash />
-                          Delete
+                          <Trash /> Delete
                         </button>
                       </div>
                     ))}
                     <button
                       type="button"
+                      title="Add new website"
                       onClick={() => handleAddField(idx, "websites")}
-                      className="text-green-500 cursor-pointer hover:underline flex "
+                      className="text-green-500 gap-2 px-4 py-2 rounded-xl transition-all cursor-pointer hover:bg-green-200 hover:text-green-500 flex "
                     >
-                      <PlusSquare />
-                      Add Website
+                      <CopyPlus />
+                      Website
                     </button>
                   </div>
                 </div>
               ))}
 
-              <button
-                type="button"
-                onClick={handleAddOffice}
-                className="text-indigo-500 cursor-pointer hover:underline flex "
-              >
-                <PlusSquare /> Add Office
-              </button>
-
               <div className="flex items-center gap-3 align-middle ">
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded  flex cursor-pointer "
+                  title="Save data for edit / create"
+                  className="bg-blue-600 gap-2 text-white hover:bg-blue-200 hover:text-blue-500 transition-all px-4 py-2 rounded-xl  flex cursor-pointer "
                 >
-                  {editingId ? "Update" : "Save"}
+                  <SaveAll /> {editingId ? "Update" : "Save"}
                 </button>
                 <button
                   onClick={closeModal}
-                  className="text-gray-500 hover:text-red-800 font-bold cursor-pointer hover:underline px-4 py-2"
+                  title="Cancel"
+                  className="text-gray-500  hover:bg-red-200 hover:text-red-500  font-bold cursor-pointer rounded-xl  px-4 py-2"
                 >
                   Cancel
                 </button>
@@ -487,29 +653,31 @@ export default function AdminLocationPage() {
       )}
 
       {/* List Countries */}
-      <div className="bg-white rounded p-4">
+      <div className="bg-white rounded-full p-4">
         {countries.length === 0 ? (
           <p>No countries found.</p>
         ) : (
           countries.map((country) => (
             <div
               key={country.id}
-              className="border-2 border-slate-200 shadow text-slate-500 font-semibold pl-4/30 p-3 rounded-2xl mb-4 py-3 my-2"
+              className="border-2 border-slate-200 shadow text-slate-500 font-semibold pl-4/30 p-3 rounded-full-2xl mb-4 py-3 my-2"
             >
               <div className="flex justify-between items-center mb-2">
                 <h3 className="font-semibold">{country.country_name}</h3>
                 <div className="space-x-2">
                   <button
                     onClick={() => handleEdit(country)}
-                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                    title="Edit country"
+                    className="bg-yellow-500 text-white px-4 py-2 cursor-pointer transition-all  rounded-xl hover:bg-yellow-200 hover:text-yellow-500"
                   >
-                    Edit
+                    <PenBoxIcon />
                   </button>
                   <button
                     onClick={() => handleDelete(country.id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                    title="Delete country"
+                    className="bg-red-500 text-white px-4 py-2 rounded-xl   cursor-pointer transition-all  hover:bg-red-200 hover:text-red-500"
                   >
-                    Delete
+                    <Trash />
                   </button>
                 </div>
               </div>

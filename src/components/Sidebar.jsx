@@ -20,6 +20,7 @@ import {
   Puzzle,
   Headphones,
   BriefcaseBusiness,
+  MonitorStop,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -77,6 +78,10 @@ const menuVariants = {
     bg: "from-blue-500 to-emerald-500",
     icon: "from-blue-400 to-emerald-400",
   },
+  Request: {
+    bg: "from-purple-500 to-pink-500",
+    icon: "from-purple-700 to-pink-600",
+  },
 };
 export const menu = [
   { group: "Main", icon: Home, label: "Dashboard", route: "/dashboard" },
@@ -87,6 +92,7 @@ export const menu = [
     label: "Product",
     submenu: [
       { label: "Products list", route: "/products" },
+      { label: "Sub Product", route: "/sub-product" },
       { label: "Category", route: "/product-category" },
     ],
   },
@@ -120,6 +126,12 @@ export const menu = [
   },
 
   { group: "People", icon: Handshake, label: "Partner", route: "/partners" },
+  {
+    group: "People",
+    icon: MonitorStop,
+    label: "Request",
+    route: "/request-demo",
+  },
 
   { group: "Content", icon: Image, label: "Banner", route: "/banners" },
   { group: "Content", icon: CalendarClock, label: "Event", route: "/events" },
@@ -232,7 +244,7 @@ export default function Sidebar({
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          className="fixed inset-0 bg-white z-30 md:hidden"
           onClick={onRequestCloseMobile}
         />
       )}
@@ -382,7 +394,7 @@ export default function Sidebar({
           {effectiveCollapsed && hoveredItem && (
             <div
               ref={panelRef}
-              className="fixed left-[70px] rounded-xl shadow-2xl bg-[#FFFFFF] dark:bg-gray-900 dark:text-slate-200 border border-gray-200 dark:border-gray-800 backdrop-blur-md p-4"
+              className="fixed left-[70px] rounded-xl shadow-2xl  bg-[#FFFFFF] dark:bg-gray-900 dark:text-slate-200 border border-gray-200 dark:border-gray-800 backdrop-blur-md p-4"
               style={{ top: panelTop, width: PANEL_WIDTH_PX }}
               onMouseEnter={() => setHoveredItem(hoveredItem)}
               onMouseLeave={() => setHoveredItem(null)}

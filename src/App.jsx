@@ -30,6 +30,8 @@ import AdminLocationPage from "./pages/AdminLocationPage";
 import Industry from "./pages/Industry";
 import JoinUs from "./pages/JoinUs";
 import EventAdmin from "./pages/Event";
+import RequestDemoAdmin from "./pages/RequestDemoAdmin";
+import SubProduct from "./pages/SubProduct";
 
 function App() {
   return (
@@ -50,6 +52,8 @@ function App() {
         <Route index element={<Dashboard />} /> {/* Default route */}
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="banners" element={<Banners />} />
+        <Route path="request-demo" element={<RequestDemoAdmin />} />
+        <Route path="sub-product" element={<SubProduct  />} />
         <Route path="product-category" element={<ProductCategory />} />
         <Route path="products" element={<Product />} />
         <Route path="industry" element={<Industry />} />

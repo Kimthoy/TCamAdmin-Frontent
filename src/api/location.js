@@ -33,3 +33,14 @@ export const updateLocation = (id, formData) => {
 export const deleteLocation = (id) => {
   return api.delete(`/admin/location-system/${id}`);
 };
+export const deleteOffice = (id) => {
+  return api.delete(`/admin/location-system/office/${id}`);
+};
+export const deleteEmail = (id) => {
+  return api.delete(`/admin/location-system/email/${id}`);
+};
+export const deletePhone = (id) =>
+  api.delete(`/admin/location-system/phone/${id}`);
+export const deleteWebsite = (id) =>
+  api.delete(`/admin/location-system/website/${id}`);
+

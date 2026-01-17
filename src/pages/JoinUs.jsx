@@ -7,7 +7,17 @@ import {
   deleteWhyJoinUs,
   getWhyJoinUsById,
 } from "../api/joinus";
-import { Award, BookOpen, Smile, Users } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  CopyPlus,
+  CopyX,
+  PenBoxIcon,
+  SaveAll,
+  Smile,
+  Trash,
+  Users,
+} from "lucide-react";
 import Swal from "sweetalert2";
 
 const iconOptions = { Award, BookOpen, Smile, Users };
@@ -138,14 +148,15 @@ export default function JoinUs() {
   };
 
   return (
-    <div className="p-6">
+    <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Manage Why Join Us Sections</h1>
+        <h1 className="text-2xl font-bold">Join us section management</h1>
         <button
           onClick={() => openModal()}
-          className="bg-blue-600 text-white px-3  py-5 rounded hover:bg-blue-700 transition"
+          title="Add new join us section"
+          className="bg-blue-600 text-white px-4 cursor-pointer py-2 rounded hover:bg-blue-200 hover:text-blue-500  transition-all "
         >
-          + Add Section
+          <CopyPlus />
         </button>
       </div>
 
@@ -184,15 +195,16 @@ export default function JoinUs() {
                   <td className="  py-5 text-center flex gap-2 items-center align-middle justify-center">
                     <button
                       onClick={() => openModal(sec)}
-                      className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600 transition"
+                      title="Edit join us"
+                      className="bg-yellow-500 cursor-pointer text-white px-4 py-2 rounded-xl hover:bg-yellow-200 hover:text-yellow-500 transition-all"
                     >
-                      Edit
+                      <PenBoxIcon />
                     </button>
                     <button
                       onClick={() => handleDelete(sec.id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                      className="bg-red-500 cursor-pointer text-white px-4 py-2 rounded-xl hover:text-red-500 hover:bg-red-200 transition-all"
                     >
-                      Delete
+                      <Trash />
                     </button>
                   </td>
                 </tr>
@@ -215,9 +227,10 @@ export default function JoinUs() {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-5xl p-6  h-screen overflow-y-auto relative">
             <button
               onClick={closeModal}
-              className=" sticky -top-6 -left-12 bg-slate-200 font-semibold text-emerald-700 w-7 h-7 rounded-full hover:text-red-300 hover:cursor-pointer"
+              title="Close"
+              className="px-4  font-semibold text-slate-700 w-7 h-7 rounded-xl hover:text-red-500 hover:cursor-pointer"
             >
-              ✕
+              <CopyX />
             </button>
             <h2 className="text-xl font-bold mb-4">
               {editingId ? "Edit Section" : "Add Section"}
@@ -231,14 +244,14 @@ export default function JoinUs() {
                   value={formData.section_tag}
                   onChange={handleChange}
                   placeholder="Section Tag"
-                  className="border p-2 flex-1 rounded"
+                  className="border border-slate-300  px-3 py-2 flex-1 rounded-xl focus:bg-slate-200"
                 />
                 <input
                   name="section_title"
                   value={formData.section_title}
                   onChange={handleChange}
                   placeholder="Section Title"
-                  className="border p-2 flex-1 rounded"
+                  className="border border-slate-300 px-3 py-2 flex-1 rounded-xl focus:bg-slate-200"
                   required
                 />
               </div>
@@ -247,7 +260,7 @@ export default function JoinUs() {
                 value={formData.section_description}
                 onChange={handleChange}
                 placeholder="Section Description"
-                className="border p-2 w-full rounded"
+                className="border border-slate-300 px-3 py-2 flex-1 rounded-xl focus:bg-slate-200"
               />
               <div className="flex items-center gap-4">
                 <label>
@@ -260,60 +273,77 @@ export default function JoinUs() {
                   />
                   Active
                 </label>
-                <input
-                  type="number"
-                  name="sort_order"
-                  value={formData.sort_order}
-                  onChange={handleChange}
-                  placeholder="Sort Order"
-                  className="border p-2 rounded w-24"
-                />
+                <div className="flex flex-col space-y-3">
+                  <div>Order number</div>
+                  <input
+                    type="number"
+                    name="sort_order"
+                    value={formData.sort_order}
+                    onChange={handleChange}
+                    placeholder="Sort Order"
+                    className="border border-slate-300 w-24 px-3 py-2 flex-1 rounded-xl focus:bg-slate-200"
+                  />
+                </div>
               </div>
 
               {/* Items */}
               <div>
                 <h3 className="font-semibold">Items</h3>
-                <div className="space-y-2 max-h-80 overflow-y-auto border p-2 rounded">
+                <div className="space-y-6  max-h-100 overflow-y-auto border border-slate-300  p-2 rounded">
                   {formData.items.map((item, idx) => (
-                    <div key={idx} className="flex gap-2 items-center">
-                      <select
-                        value={item.icon}
-                        onChange={(e) =>
-                          handleItemChange(idx, "icon", e.target.value)
-                        }
-                        className="border p-2 rounded"
-                      >
-                        {Object.keys(iconOptions).map((iconName) => (
-                          <option key={iconName} value={iconName}>
-                            {iconName}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        placeholder="Title"
-                        value={item.title}
-                        onChange={(e) =>
-                          handleItemChange(idx, "title", e.target.value)
-                        }
-                        className="border p-2 rounded flex-1"
-                        required
-                      />
-                      <input
+                    <div
+                      key={idx}
+                      className="flex gap-2 items-center border-b  py-5 border-slate-300"
+                    >
+                      <div className="flex flex-col space-y-1">
+                        <div className="space-y-1">
+                          <div>Select the icon</div>
+                          <select
+                            value={item.icon}
+                            onChange={(e) =>
+                              handleItemChange(idx, "icon", e.target.value)
+                            }
+                            className="border w-full border-slate-300  p-2 rounded-xl focus:bg-slate-200"
+                          >
+                            {Object.keys(iconOptions).map((iconName) => (
+                              <option key={iconName} value={iconName}>
+                                {iconName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <div>Title</div>
+                          <input
+                            type="text"
+                            placeholder="Title"
+                            value={item.title}
+                            onChange={(e) =>
+                              handleItemChange(idx, "title", e.target.value)
+                            }
+                            className="border border-slate-300 px-3 py-2 flex-1 rounded-xl focus:bg-slate-200"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <textarea
                         type="text"
                         placeholder="Description"
                         value={item.desc}
                         onChange={(e) =>
                           handleItemChange(idx, "desc", e.target.value)
                         }
-                        className="border p-2 rounded flex-2"
+                        className="border  border-slate-300 h-36 px-3 py-2  flex-1 rounded-xl focus:bg-slate-200"
                       />
+
                       <button
                         type="button"
+                        title="Delete item"
                         onClick={() => removeItem(idx)}
-                        className="bg-red-500 text-white px-2 rounded"
+                        className="bg-red-500  text-white px-4 py-2 cursor-pointer hover:bg-red-200 hover:text-red-500 rounded-xl transition-all   "
                       >
-                        Remove
+                        <Trash />
                       </button>
                     </div>
                   ))}
@@ -321,17 +351,19 @@ export default function JoinUs() {
                 <button
                   type="button"
                   onClick={addItem}
-                  className="bg-green-500 hover:bg-green-600 sticky bottom-5 text-white py-2 px-4 rounded-full cursor-pointer mt-2"
+                  title="Add new item"
+                  className="bg-green-500 hover:bg-green-200 hover:text-green-500 transition-all sticky bottom-5 text-white py-2 px-4 rounded-xl cursor-pointer mt-2"
                 >
-                  Add Item
+                  <CopyPlus />
                 </button>
               </div>
 
               <button
                 type="submit"
-                className=" sticky -bottom-6 bg-emerald-700 text-slate-200 px-6 py-2 rounded-full cursor-pointer mt-4 hover:bg-emerald-800 transition"
+                title="Save item"
+                className="flex sticky -bottom-6 bg-blue-600 gap-2 hover:bg-blue-200 hover:text-blue-500 text-slate-200 px-6 py-2 rounded-xl cursor-pointer mt-4  transition-all"
               >
-                {editingId ? "Update Section" : "Create Section"}
+                <SaveAll /> {editingId ? "Update " : "Create "}
               </button>
             </form>
           </div>

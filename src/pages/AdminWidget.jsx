@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { fetchWidgets, createWidget, updateWidget } from "../api/widget";
+import { SaveAll } from "lucide-react";
 
 const Label = ({ children }) => (
   <label className="block mb-1 text-sm font-medium text-gray-700">
@@ -272,9 +273,9 @@ export default function AdminWidget() {
           <div className="pt-4">
             <button
               disabled={saving}
-              className="inline-flex items-center justify-center bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="inline-flex gap-2 items-center cursor-pointer hover:bg-blue-200 hover:text-blue-500 transition-all justify-center bg-blue-500 text-white px-8 py-2 rounded-lg  disabled:opacity-50"
             >
-              {saving ? "Saving..." : "Save Settings"}
+              <SaveAll /> {saving ? "Saving..." : " Settings"}
             </button>
           </div>
         </form>
