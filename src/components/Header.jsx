@@ -94,14 +94,9 @@ export function Header({ onToggleSidebar }) {
 
   const menuItems = [
     {
-      icon: User,
-      label: "My Profile",
-      onClick: () => setModalOpen(true),
-    },
-    {
       icon: Settings,
       label: "Settings",
-      onClick: () => navigate("/settings"),
+      onClick: () => navigate("/widgets"),
     },
     {
       icon: LogOut,
@@ -192,7 +187,7 @@ export function Header({ onToggleSidebar }) {
                     {user.email || "No email"}
                   </p>
                   {user.role && (
-                    <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+                    <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </span>
                   )}

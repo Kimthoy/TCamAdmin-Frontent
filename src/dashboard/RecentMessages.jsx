@@ -9,7 +9,7 @@ export function RecentMessages({ messages = [] }) {
       name: "John Doe",
       text: "New order #12345 has been placed",
       time: "2 minutes ago",
-      avatarColor: "bg-blue-500",
+      avatarColor: "bg-green-500",
     },
     {
       id: 2,

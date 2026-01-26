@@ -41,7 +41,7 @@ export default function SubProductModal({
         existingImages: existingImgs,
         previewImages:
           existingImgs.map(
-            (img) => `${BACKEND_URL}/storage/${img.image_path}`
+            (img) => `${BACKEND_URL}/storage/${img.image_path}`,
           ) || [],
         primary_image_index: existingImgs.findIndex((i) => i.is_primary) ?? 0,
         properties: editData.properties?.length
@@ -161,7 +161,7 @@ export default function SubProductModal({
       Swal.fire(
         editData ? "Updated!" : "Created!",
         "SubProduct saved successfully",
-        "success"
+        "success",
       );
       onSaved?.();
       onClose();
@@ -169,7 +169,7 @@ export default function SubProductModal({
       Swal.fire(
         "Error",
         err.response?.data?.message || "Something went wrong",
-        "error"
+        "error",
       );
     }
   };
@@ -312,7 +312,7 @@ export default function SubProductModal({
               <button
                 type="button"
                 onClick={addProperty}
-                className="bg-blue-500 text-white px-4 py-2 rounded-xl"
+                className="bg-green-500 text-white px-4 py-2 rounded-xl"
               >
                 Add Property
               </button>

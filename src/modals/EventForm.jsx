@@ -105,7 +105,7 @@ export default function EventForm({ open, onClose, onSaved, initial = null }) {
   const addItem = (setter, item) => setter((prev) => [...prev, item]);
   const updateItem = (setter, index, key, value) =>
     setter((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
+      prev.map((item, i) => (i === index ? { ...item, [key]: value } : item)),
     );
   const removeItem = (setter, index) =>
     setter((prev) => prev.filter((_, i) => i !== index));
@@ -170,7 +170,7 @@ export default function EventForm({ open, onClose, onSaved, initial = null }) {
             {/* HEADER */}
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h2 className="text-2xl font-extrabold flex items-center gap-3">
-                <Calendar className="text-blue-600" />
+                <Calendar className="text-green-600" />
                 {isEdit ? "Edit Event" : "Create Event"}
               </h2>
               <button onClick={onClose}>
@@ -271,7 +271,7 @@ export default function EventForm({ open, onClose, onSaved, initial = null }) {
                   onClick={() => fileInputRef.current.click()}
                   className="border-2 border-dashed border-gray-300 dark:border-gray-700 
                              rounded-xl h-48 flex items-center justify-center cursor-pointer 
-                             hover:border-blue-500 transition"
+                             hover:border-green-500 transition"
                 >
                   {preview ? (
                     <img src={preview} className="h-full object-contain p-4" />
@@ -364,7 +364,7 @@ function Section({
         <button
           type="button"
           onClick={onAdd}
-          className="text-blue-600 font-semibold"
+          className="text-green-600 font-semibold"
         >
           + Add
         </button>

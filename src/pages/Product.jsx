@@ -5,14 +5,6 @@ import { fetchProducts, deleteProduct, fetchCategories } from "../api/products";
 import ProductForm from "../modals/ProductForm";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 
-function fmtPrice(v) {
-  if (v == null || v === "") return "—";
-  // ensure numeric formatting even when price is string
-  const n = Number(v);
-  if (Number.isNaN(n)) return v;
-  return n.toLocaleString(undefined, { minimumFractionDigits: 2 });
-}
-
 export default function Product() {
   const [items, setItems] = useState([]); // products array
   const [loading, setLoading] = useState(true);
@@ -89,14 +81,14 @@ export default function Product() {
       } else {
         setCurrentPage(1);
         setTotalPages(
-          Math.max(1, Math.ceil((normalized.items?.length || 0) / PAGE_SIZE))
+          Math.max(1, Math.ceil((normalized.items?.length || 0) / PAGE_SIZE)),
         );
         setTotalItems(normalized.items?.length ?? 0);
       }
 
       const cats = Array.isArray(catRes.data?.data)
         ? catRes.data.data
-        : catRes.data?.data ?? catRes.data ?? [];
+        : (catRes.data?.data ?? catRes.data ?? []);
       setCategories(cats);
       setItems(normalized.items ?? []);
     } catch (err) {
@@ -120,7 +112,7 @@ export default function Product() {
       (p) =>
         (p.title || "").toLowerCase().includes(q) ||
         (p.short_description || "").toLowerCase().includes(q) ||
-        (p.description || "").toLowerCase().includes(q)
+        (p.description || "").toLowerCase().includes(q),
     );
   }, [items, query]);
 
@@ -301,7 +293,7 @@ export default function Product() {
                               href={p.website_link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-blue-600 hover:underline"
+                              className="text-green-600 hover:underline"
                             >
                               {p.website_link}
                             </a>
@@ -328,7 +320,7 @@ export default function Product() {
                           <div className="flex items-center justify-end gap-2 sm:gap-3">
                             <button
                               onClick={() => handleEdit(p)}
-                              className="p-2 sm:p-3 rounded-xl hover:cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                              className="p-2 sm:p-3 rounded-xl hover:cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400"
                             >
                               <Edit className="w-4 sm:w-5 h-4 sm:h-5" />
                             </button>

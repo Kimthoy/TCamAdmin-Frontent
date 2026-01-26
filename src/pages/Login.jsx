@@ -24,12 +24,10 @@ export default function Login() {
 
   const emailRef = useRef(null);
 
-  // Focus email on load
   useEffect(() => {
     emailRef.current?.focus();
   }, []);
 
-  // On success or error
   useEffect(() => {
     if (!message) return;
 
@@ -47,7 +45,6 @@ export default function Login() {
     }
   }, [message, navigate]);
 
-  // Client-side validation
   const validate = () => {
     if (!email) return "Please enter your email.";
     if (!/^\S+@\S+\.\S+$/.test(email)) return "Please enter a valid email.";
@@ -56,12 +53,10 @@ export default function Login() {
     return null;
   };
 
-  // Handle login submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
 
-    // Validate first
     const error = validate();
     if (error) {
       setMessage({ type: "error", text: error });
@@ -70,21 +65,13 @@ export default function Login() {
 
     try {
       setLoading(true);
-
-      // Call login API (JWT)
       await login(email.trim(), password);
-
-      setMessage({
-        type: "success",
-        text: "Welcome back — redirecting…",
-      });
+      setMessage({ type: "success", text: "Welcome back — redirecting…" });
     } catch (err) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        "Invalid email or password.";
-
-      setMessage({ type: "error", text: msg });
+      setMessage({
+        type: "error",
+        text: err?.response?.data?.message || "Invalid email or password.",
+      });
     } finally {
       setLoading(false);
     }
@@ -94,38 +81,61 @@ export default function Login() {
     "absolute left-4 pointer-events-none transition-all duration-200 text-sm";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-pink-900 px-4">
-      {/* Background blobs */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-20 -top-12 w-96 h-96 bg-purple-600/25 rounded-full blur-3xl animate-blob"></div>
-        <div className="absolute -right-16 top-28 w-80 h-80 bg-indigo-600/25 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute left-10 bottom-[-80px] w-96 h-96 bg-pink-600/25 rounded-full blur-3xl animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+      {/* LEFT SIDE */}
+      <div className="hidden md:flex relative items-center justify-center bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-700 text-white">
+        <div className="absolute inset-0">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-blob"></div>
+          <div className="absolute bottom-10 right-10 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+        </div>
+
+        <div className="relative z-10 max-w-md px-10">
+          <h1 className="text-4xl font-bold leading-tight">
+            Welcome to <br /> TCAM Solution
+          </h1>
+          <p className="mt-4 text-white/80 text-lg">
+            Secure access to your admin dashboard.
+          </p>
+
+          <ul className="mt-8 space-y-3 text-white/90">
+            <li>✔ Secure Authentication</li>
+            <li>✔ Role-Based Access</li>
+            <li>✔ Fast & Reliable System</li>
+          </ul>
+        </div>
       </div>
 
-      {/* Login card */}
-      <div
-        className={`relative z-10 w-full max-w-md mx-auto transform transition-all duration-500 ${
-          shake ? "animate-shake" : ""
-        }`}
-      >
-        <div className="backdrop-blur-2xl bg-white/6 border border-white/10 rounded-3xl shadow-2xl p-8 md:p-10">
-          <div className="text-center mb-6">
-            <div className="mx-auto inline-flex items-center justify-center rounded-full h-16 w-16 bg-white/12 shadow-inner">
-              <Lock className="h-8 w-8 text-white" strokeWidth={2} />
-            </div>
-            <h1 className="mt-4 text-3xl md:text-4xl font-semibold text-white tracking-tight">
-              TCAM Solution
-            </h1>
-            <p className="mt-1 text-sm text-white/70">Admin Dashboard Login</p>
+      {/* RIGHT SIDE */}
+      {/* RIGHT SIDE – MODERN STYLED FORM */}
+      <div className="relative flex items-center justify-center bg-gradient-to-br from-slate-100 via-white to-slate-100 px-6">
+        {/* Accent glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-24 right-10 w-72 h-72 bg-indigo-300/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-10 w-72 h-72 bg-purple-300/30 rounded-full blur-3xl" />
+        </div>
+
+        <div
+          className={`relative z-10 w-full max-w-md rounded-3xl bg-white/80 backdrop-blur-xl border border-slate-200 shadow-[0_25px_80px_-20px_rgba(0,0,0,0.25)] p-8 transition-all ${
+            shake ? "animate-shake" : ""
+          }`}
+        >
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">
+              Welcome back
+            </h2>
+            <p className="mt-2 text-slate-500">
+              Sign in to your admin dashboard
+            </p>
           </div>
 
-          {/* Message box */}
+          {/* Message */}
           {message && (
             <div
-              className={`mb-4 flex items-center gap-3 px-4 py-2 rounded-xl text-sm ${
+              className={`mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-sm shadow-inner ${
                 message.type === "error"
-                  ? "bg-red-600/20 text-red-100 border border-red-600/40"
-                  : "bg-emerald-600/20 text-emerald-100 border border-emerald-600/40"
+                  ? "bg-red-50 text-red-700 border border-red-200"
+                  : "bg-emerald-50 text-emerald-700 border border-emerald-200"
               }`}
             >
               {message.type === "error" ? (
@@ -133,97 +143,97 @@ export default function Login() {
               ) : (
                 <CheckCircle className="h-5 w-5" />
               )}
-              <span>{message.text}</span>
+              {message.text}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-            {/* Email input */}
-            <div className="relative">
-              <input
-                id={`${id}-email`}
-                ref={emailRef}
-                type="email"
-                required
-                disabled={loading}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
-              />
-              <label
-                htmlFor={`${id}-email`}
-                className={`${labelBase} ${
-                  email ? "-top-3 text-xs text-white" : "top-3 text-white/70"
-                } peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white`}
-              >
-                Email address
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email */}
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-slate-700">
+                Email
               </label>
-              <Mail className="absolute right-4 top-4 h-5 w-5 text-white/60" />
+              <div className="relative">
+                <input
+                  ref={emailRef}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  placeholder="example@gmail.com"
+                  className="
+              w-full rounded-2xl px-4 py-3 pr-11
+              bg-white border border-slate-300
+              text-slate-900
+              focus:outline-none
+              focus:ring-2 focus:ring-indigo-500
+              focus:border-indigo-500
+              focus:shadow-[inset_0_0_12px_rgba(99,102,241,0.25)]
+              transition
+            "
+                />
+                <Mail className="absolute right-4 top-3.5 h-5 w-5 text-slate-400" />
+              </div>
             </div>
 
-            {/* Password input */}
-            <div className="relative">
-              <input
-                id={`${id}-password`}
-                type={showPassword ? "text" : "password"}
-                required
-                disabled={loading}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="peer w-full px-4 py-4 bg-white/6 border border-white/12 rounded-2xl text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200"
-              />
-              <label
-                htmlFor={`${id}-password`}
-                className={`${labelBase} ${
-                  password ? "-top-3 text-xs text-white" : "top-3 text-white/70"
-                } peer-focus:-top-3 peer-focus:text-xs peer-focus:text-white`}
-              >
+            {/* Password */}
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-slate-700">
                 Password
               </label>
-
-              <button
-                type="button"
-                onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-3 top-3 text-white/60 hover:text-white p-2"
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" />
-                ) : (
-                  <Eye className="h-5 w-5" />
-                )}
-              </button>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  placeholder="••••••••"
+                  className="
+              w-full rounded-2xl px-4 py-3 pr-11
+              bg-white border border-slate-300
+              text-slate-900
+              focus:outline-none
+              focus:ring-2 focus:ring-indigo-500
+              focus:border-indigo-500
+              focus:shadow-[inset_0_0_12px_rgba(99,102,241,0.25)]
+              transition
+            "
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 transition"
+                ></button>
+              </div>
             </div>
 
-            {/* Submit button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="relative overflow-hidden w-full flex items-center justify-center gap-3 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-lg transition-all hover:scale-[1.03] focus:ring-4 focus:ring-indigo-400/30 disabled:opacity-70 btn-anim"
+              className="
+          w-full rounded-2xl py-3 font-semibold text-white
+          bg-gradient-to-r from-indigo-600 to-purple-600
+          shadow-lg shadow-indigo-600/30
+          hover:scale-[1.03] hover:shadow-xl
+          transition-all duration-200
+          disabled:opacity-60 disabled:hover:scale-100
+        "
             >
-              <span
-                aria-hidden
-                className="absolute inset-0 -translate-x-full bg-[linear-gradient(90deg,rgba(255,255,255,0.06),rgba(255,255,255,0.12),rgba(255,255,255,0.06))] animate-shimmer"
-              />
-
-              <span className="relative flex items-center gap-3">
-                {loading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    Signing in…
-                  </>
-                ) : (
-                  "Continue to Dashboard"
-                )}
-              </span>
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Signing in…
+                </span>
+              ) : (
+                "Continue"
+              )}
             </button>
           </form>
 
-          <div className="mt-6 text-center text-white/60 text-sm">
-            <Lock className="h-4 w-4 inline-block mr-1" />
-            Secure • Encrypted • Protected
+          {/* Footer */}
+          <div className="mt-8 text-center text-sm text-slate-400">
+            Secure • Encrypted • Trusted
           </div>
         </div>
       </div>
@@ -237,21 +247,13 @@ export default function Login() {
         }
         .animate-blob { animation: blob 10s infinite; }
         .animation-delay-2000 { animation-delay:2s; }
-        .animation-delay-4000 { animation-delay:4s; }
-        
+
         @keyframes shake {
           0%,100%{transform:translateX(0);}
-          20%,60%{transform:translateX(-8px);}
-          40%,80%{transform:translateX(8px);}
+          25%,75%{transform:translateX(-8px);}
+          50%{transform:translateX(8px);}
         }
-        .animate-shake { animation: shake 0.6s ease-in-out; }
-
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); opacity: 0; }
-          50% { transform: translateX(0%); opacity: 1; }
-          100% { transform: translateX(100%); opacity: 0; }
-        }
-        .animate-shimmer { animation: shimmer 1.6s infinite linear; }
+        .animate-shake { animation: shake 0.6s; }
       `}</style>
     </div>
   );

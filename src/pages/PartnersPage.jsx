@@ -7,7 +7,7 @@ import {
   ExternalLink,
   ImageOff,
   ArrowUpDown,
-  FolderDot, 
+  FolderDot,
 } from "lucide-react";
 import { fetchPartners, deletePartner } from "../api/partners";
 import PartnerForm from "../modals/PartnerForm";
@@ -61,7 +61,7 @@ export default function PartnersPage() {
       (p) =>
         p.name?.toLowerCase().includes(q) ||
         p.short_description?.toLowerCase().includes(q) ||
-        p.category?.name?.toLowerCase().includes(q) // Search by Category Name
+        p.category?.name?.toLowerCase().includes(q), // Search by Category Name
     );
   }, [partnersRaw, query]);
 
@@ -251,7 +251,7 @@ export default function PartnersPage() {
                         {/* ⬇️ NEW COLUMN CELL: Category */}
                         <td className="px-6 py-4">
                           {p.category?.name ? (
-                            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+                            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300">
                               <FolderDot className="w-3 h-3" />
                               {p.category.name}
                             </div>
@@ -309,7 +309,7 @@ export default function PartnersPage() {
                                 setEditing(p);
                                 setFormOpen(true);
                               }}
-                              className="p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all"
+                              className="p-3 rounded-xl hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-all"
                               title="Edit"
                             >
                               <Edit className="w-5 h-5" />

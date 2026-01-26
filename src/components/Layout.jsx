@@ -11,7 +11,7 @@ export function Layout() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div className="flex battambang-regular h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       {/* Sidebar - always visible (collapsed or full) */}
       <Sidebar
         collapsed={collapsed}

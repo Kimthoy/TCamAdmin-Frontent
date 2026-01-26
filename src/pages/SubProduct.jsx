@@ -89,7 +89,7 @@ export default function SubProduct() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Sub Services Management</h1>
         <button
-          className="bg-blue-500 transition-all text-white px-7 hover:bg-blue-200 hover:text-blue-500 py-2 rounded-xl shadow-2xl cursor-pointer"
+          className="bg-green-500 transition-all text-white px-7 hover:bg-green-200 hover:text-green-500 py-2 rounded-xl shadow-2xl cursor-pointer"
           title="Add new sub product"
           onClick={() => {
             setEditData(null);
@@ -181,13 +181,13 @@ export default function SubProduct() {
                     onClick={() => handlePageChange(page)}
                     className={`px-3 py-1 rounded ${
                       currentPage === page
-                        ? "bg-blue-500 text-white"
+                        ? "bg-green-500 text-white"
                         : "bg-gray-200 hover:bg-gray-300"
                     }`}
                   >
                     {page}
                   </button>
-                )
+                ),
               )}
 
               <button

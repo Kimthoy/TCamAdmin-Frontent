@@ -40,7 +40,10 @@ const menuVariants = {
     bg: "from-purple-500 to-violet-500",
     icon: "from-purple-400 to-violet-400",
   },
-  Users: { bg: "from-blue-500 to-cyan-500", icon: "from-blue-400 to-cyan-400" },
+  Users: {
+    bg: "from-green-500 to-cyan-500",
+    icon: "from-green-400 to-cyan-400",
+  },
   Customer: {
     bg: "from-orange-500 to-amber-500",
     icon: "from-orange-400 to-amber-400",
@@ -67,16 +70,16 @@ const menuVariants = {
     icon: "from-green-600 to-green-400",
   },
   Job: {
-    bg: "from-blue-500 to-emerald-500",
-    icon: "from-blue-400 to-emerald-400",
+    bg: "from-green-500 to-emerald-500",
+    icon: "from-green-400 to-emerald-400",
   },
   Support: {
-    bg: "from-blue-500 to-emerald-500",
-    icon: "from-blue-400 to-emerald-400",
+    bg: "from-green-500 to-emerald-500",
+    icon: "from-green-400 to-emerald-400",
   },
   Event: {
-    bg: "from-blue-500 to-emerald-500",
-    icon: "from-blue-400 to-emerald-400",
+    bg: "from-green-500 to-emerald-500",
+    icon: "from-green-400 to-emerald-400",
   },
   Request: {
     bg: "from-purple-500 to-pink-500",
@@ -106,13 +109,6 @@ export const menu = [
       { label: "Category", route: "/solution-category" },
       { label: "Industry Solution", route: "/industry" },
     ],
-  },
-
-  {
-    group: "Catalog",
-    icon: Headphones,
-    label: "Support",
-    route: "/support",
   },
 
   {
@@ -159,13 +155,7 @@ export const menu = [
     group: "Widget",
     icon: Settings,
     label: "Widget",
-    submenu: [
-      { label: "Setting", route: "/settings" },
-      { label: "Widget", route: "/widget" },
-      { label: "Location", route: "/location" },
-      { label: "About", route: "/about_us" },
-      { label: "Join Us", route: "/joinus" },
-    ],
+    route: "/widgets",
   },
 ];
 const groupedMenu = menu.reduce((acc, item) => {
@@ -233,7 +223,7 @@ export default function Sidebar({
       const desiredTop = centered - 48 + COLLAPSED_PANEL_OFFSET;
       const clamped = Math.max(
         PANEL_MIN_TOP,
-        Math.min(desiredTop, window.innerHeight - 100)
+        Math.min(desiredTop, window.innerHeight - 100),
       );
       setPanelTop(clamped);
     }

@@ -79,7 +79,7 @@ const NotificationBell = () => {
               Notifications
             </h3>
             {unreadCount > 0 && (
-              <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+              <span className="text-xs font-medium text-green-600 dark:text-green-400">
                 {unreadCount} new
               </span>
             )}
@@ -103,7 +103,7 @@ const NotificationBell = () => {
                 >
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-1">
-                      <MessageCircle className="w-5 h-5 text-blue-500" />
+                      <MessageCircle className="w-5 h-5 text-green-500" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -127,7 +127,7 @@ const NotificationBell = () => {
               <a
                 href="/contact-messages"
                 onClick={() => setDropdownOpen(false)}
-                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm font-medium text-green-600 dark:text-green-400 hover:underline"
               >
                 View all messages →
               </a>

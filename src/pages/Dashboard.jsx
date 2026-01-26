@@ -32,7 +32,7 @@ ChartJS.register(
 
 /* ========== Configuration (Updated for specific titles/icons) ========== */
 const ICONS = [Package2, Briefcase, Users, Building2];
-const VARIANTS = ["teal", "purple", "blue", "orange"];
+const VARIANTS = ["teal", "purple", "green", "orange"];
 const WANTED_TITLES = ["Products", "Services", "Customers", "Partners"];
 /* ===================================================================== */
 
@@ -303,8 +303,8 @@ function ModernStatsCard({
       ring: "#8b5cf6",
       iconBg: "from-violet-500 to-pink-500",
     },
-    blue: {
-      bg: "bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 dark:from-blue-900/20 dark:to-cyan-900/20 dark:border-blue-800",
+    green: {
+      bg: "bg-gradient-to-r from-green-50 to-cyan-50 border border-green-200 dark:from-green-900/20 dark:to-cyan-900/20 dark:border-green-800",
       ring: "#3b82f6",
       iconBg: "from-sky-500 to-cyan-500",
     },

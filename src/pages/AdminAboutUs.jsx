@@ -1,529 +1,304 @@
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  fetchAboutUsList,
-  createAboutUs,
-  updateAboutUs,
-  deleteAboutUs,
-} from "../api/about";
-import { PenBoxIcon, Trash, CopyPlus } from "lucide-react";
+import { fetchAboutUsList, createAboutUs, updateAboutUs } from "../api/about";
+import { SaveAll } from "lucide-react";
+
+const Label = ({ children }) => (
+  <label className="block mb-1 text-sm font-medium text-gray-700">
+    {children}
+  </label>
+);
+
+const Input = (props) => (
+  <input
+    {...props}
+    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 input-inner-shadow ${
+      props.className || ""
+    }`}
+  />
+);
+
+const Textarea = (props) => (
+  <textarea
+    {...props}
+    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 input-inner-shadow ${
+      props.className || ""
+    }`}
+  />
+);
 
 export default function AdminAboutUs() {
-  const [abouts, setAbouts] = useState([]);
+  const [about, setAbout] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    company_image: null,
-    founding_year: "",
-    founders_info: "",
-    intro_text: "",
-    operational_offices: [],
-    services_description: "",
-    company_profile: "",
-    project_count: "",
-    vision: "",
-    mission: "",
-    value_proposition: "",
-  });
   const [preview, setPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
 
-  // Fetch data
-  const fetchData = async () => {
-    setLoading(true);
+  useEffect(() => {
+    loadAbout();
+  }, []);
+
+  const loadAbout = async () => {
     try {
-      const data = await fetchAboutUsList();
-      setAbouts(data || []);
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Failed to load data", "error");
+      const res = await fetchAboutUsList();
+      if (res?.length > 0) {
+        const a = res[0];
+        setAbout(a);
+        setPreview(a.company_image || null);
+      } else {
+        setAbout({});
+        setPreview(null);
+      }
+    } catch (error) {
+      Swal.fire("Error", "Failed to load about data", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // 🔥 NEW: Save only when button clicked
+  const handleSave = async () => {
+    setSaving(true);
 
-  // Input handlers
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const formData = new FormData();
+    Object.keys(about || {}).forEach((key) => {
+      if (key === "company_image") {
+        if (about[key] instanceof File) {
+          formData.append(key, about[key]);
+        }
+      } else if (about[key] !== null && about[key] !== undefined) {
+        if (key === "operational_offices") {
+          formData.append(key, JSON.stringify(about[key]));
+        } else {
+          formData.append(key, about[key]);
+        }
+      }
+    });
+
+    try {
+      if (about?.id) {
+        await updateAboutUs(about.id, formData);
+      } else {
+        await createAboutUs(formData);
+      }
+
+      Swal.fire("Success", "Saved successfully", "success");
+      loadAbout();
+    } catch (error) {
+      Swal.fire("Error", "Failed to save data", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData((prev) => ({ ...prev, company_image: file }));
-    setPreview(file ? URL.createObjectURL(file) : null);
+  // Change handler (NO AUTO SAVE)
+  const handleChange = (e) => {
+    const newData = { ...about, [e.target.name]: e.target.value };
+    setAbout(newData);
   };
 
   const handleOfficesChange = (e) => {
     const value = e.target.value.split(",").map((v) => v.trim());
-    setFormData((prev) => ({ ...prev, operational_offices: value }));
+    const newData = { ...about, operational_offices: value };
+    setAbout(newData);
   };
 
-  // Modal
-  const openModal = (entry = null) => {
-    if (entry) {
-      setEditing(entry);
-      setFormData({
-        ...entry,
-        operational_offices: entry.operational_offices || [],
-        company_image: null,
-      });
-      setPreview(entry.company_image || null);
-    } else {
-      setEditing(null);
-      setFormData({
-        title: "",
-        company_image: null,
-        founding_year: "",
-        founders_info: "",
-        intro_text: "",
-        operational_offices: [],
-        services_description: "",
-        company_profile: "",
-        project_count: "",
-        vision: "",
-        mission: "",
-        value_proposition: "",
-      });
-      setPreview(null);
-    }
-    setModalOpen(true);
-  };
-
-  const closeModal = () => setModalOpen(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const dataToSend = new FormData();
-
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === "operational_offices") {
-          dataToSend.append(key, JSON.stringify(value));
-        } else if (key === "company_image") {
-          // Only append new file if selected
-          if (value instanceof File) {
-            dataToSend.append(key, value);
-          }
-          // Otherwise, do nothing to keep existing image
-        } else {
-          dataToSend.append(key, value ?? "");
-        }
-      });
-
-      if (editing) {
-        await updateAboutUs(editing.id, dataToSend);
-        Swal.fire("Updated!", "About Us updated successfully.", "success");
-      } else {
-        await createAboutUs(dataToSend);
-        Swal.fire("Created!", "About Us created successfully.", "success");
-      }
-
-      closeModal();
-      fetchData();
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error!", err.message || "Something went wrong.", "error");
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (preview && preview.startsWith("blob:")) URL.revokeObjectURL(preview);
+      const newData = { ...about, company_image: file };
+      setAbout(newData);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
-  // Delete
-  const handleDelete = (entry) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Delete "${entry.title}"?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteAboutUs(entry.id);
-          Swal.fire("Deleted!", "Entry has been deleted.", "success");
-          fetchData();
-        } catch (err) {
-          console.error(err);
-          Swal.fire("Error!", err.message || "Something went wrong.", "error");
-        }
-      }
-    });
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-green-500 border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">About Us</h1>
-        <button
-          title="Add new about us"
-          className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-blue-200 hover:text-blue-500 bg-blue-600 text-white px-4 py-2 rounded shadow "
-          onClick={() => openModal()}
-        >
-          <CopyPlus className="w-4 h-4" /> Add
-        </button>
-      </div>
+    <div className="max-w-8xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <form className="p-6 space-y-12">
+          {/* Basic */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4">Basic Info</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label>Title</Label>
+                <Input
+                  name="title"
+                  value={about?.title || ""}
+                  onChange={handleChange}
+                  placeholder="Title"
+                  required
+                />
+              </div>
 
-      {/* List */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : abouts.length === 0 ? (
-        <p className="text-gray-400 text-center py-16">No entries found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-lg">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-4 text-left text-lg font-semibold text-gray-700">
-                  #
-                </th>
-                <th className="px-6 py-4 text-left text-lg font-semibold text-gray-700">
-                  Title
-                </th>
-                <th className="px-6 py-4 text-left text-lg font-semibold text-gray-700">
-                  Founded
-                </th>
-                <th className="px-6 py-4 text-left text-lg font-semibold text-gray-700">
-                  Projects
-                </th>
-                <th className="px-6 py-4 text-left text-lg font-semibold text-gray-700">
-                  Offices
-                </th>
-                <th className="px-6 py-4 text-center text-lg font-semibold text-gray-700">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <AnimatePresence>
-              <tbody className="divide-y divide-gray-200">
-                {abouts.map((about, index) => (
-                  <motion.tr
-                    key={about.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-5 text-lg text-gray-600">
-                      {index + 1}
-                    </td>
-                    <td className="px-6 py-5 text-lg text-gray-800 flex items-center gap-4">
-                      {about.company_image && (
-                        <img
-                          src={about.company_image}
-                          alt={about.title}
-                          className="w-16 h-16 object-cover rounded-xl border border-gray-200 shadow-sm"
-                        />
-                      )}
-                      <span className="font-medium">{about.title}</span>
-                    </td>
-                    <td className="px-6 py-5 text-lg text-gray-800">
-                      {about.founding_year || "—"}
-                    </td>
-                    <td className="px-6 py-5 text-lg text-gray-800">
-                      {about.project_count || 0}
-                    </td>
-                    <td className="px-6 py-5 text-lg text-gray-800">
-                      {(about.operational_offices || []).join(", ")}
-                    </td>
-                    <td className="px-6 py-5 text-center flex justify-center gap-4">
-                      <motion.button
-                        onClick={() => openModal(about)}
-                        className="p-3 rounded-lg cursor-pointer bg-yellow-500 text-white hover:text-yellow-500 transition-all hover:bg-yellow-200 shadow-lg"
-                        title="Edit about us"
-                      >
-                        <PenBoxIcon size={20} />
-                      </motion.button>
-                      <motion.button
-                        onClick={() => handleDelete(about)}
-                        className="p-3 rounded-lg bg-red-500 cursor-pointer text-white transition-all hover:text-red-500 hover:bg-red-200  shadow-lg"
-                        title="Delete about us"
-                      >
-                        <Trash size={20} />
-                      </motion.button>
-                    </td>
-                  </motion.tr>
-                ))}
+              <div>
+                <Label>Founding Year</Label>
+                <Input
+                  name="founding_year"
+                  type="number"
+                  value={about?.founding_year || ""}
+                  onChange={handleChange}
+                  placeholder="Founding Year"
+                />
+              </div>
 
-                {abouts.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-16 text-center text-gray-400 text-lg"
-                    >
-                      No entries found.
-                    </td>
-                  </tr>
+              <div className="md:col-span-2">
+                <Label>Company Image</Label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="block w-full text-sm py-2 rounded-lg border border-dashed border-gray-400 text-gray-400"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Company Preview"
+                    className="h-28 object-contain border rounded-lg p-2 bg-gray-50"
+                  />
+                ) : (
+                  <div className="h-28 w-full flex items-center justify-center border rounded-lg text-gray-400">
+                    No Image
+                  </div>
                 )}
-              </tbody>
-            </AnimatePresence>
-          </table>
-        </div>
-      )}
-
-      {/* Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-7xl p-6 overflow-auto max-h-[95vh]">
-            <h2 className="text-2xl font-bold mb-4">
-              {editing ? "Edit About Us" : "Create About Us"}
-            </h2>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              {/* Basic Info */}
-              <div className="grid md:grid-cols-2 gap-4 border border-slate-300 p-4 rounded-lg">
-                <h3 className="col-span-2 text-lg font-semibold mb-2">
-                  Basic Info
-                </h3>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="title"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Title <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="title"
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="founding_year"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Founding Year
-                  </label>
-                  <input
-                    id="founding_year"
-                    type="number"
-                    name="founding_year"
-                    value={formData.founding_year}
-                    onChange={handleChange}
-                    className="border border-slate-300  p-2 w-full focus:bg-slate-200 rounded-xl px-3"
-                  />
-                </div>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="company_image"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Photo
-                  </label>
-                  <input
-                    id="company_image"
-                    type="file"
-                    name="company_image"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                  />
-                  {preview && (
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      className="w-32 h-20 object-cover focus:bg-slate-200 rounded-xl px-3 mt-2"
-                    />
-                  )}
-                </div>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="founders_info"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Founder Info
-                  </label>
-                  <textarea
-                    id="founders_info"
-                    name="founders_info"
-                    value={formData.founders_info}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
-                  />
-                </div>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="intro_text"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Introduction
-                  </label>
-                  <textarea
-                    id="intro_text"
-                    name="intro_text"
-                    value={formData.intro_text}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
-                  />
-                </div>
               </div>
 
-              {/* Operational Info */}
-              <div className="grid md:grid-cols-2 gap-4 border border-slate-300 p-4 rounded-lg">
-                <h3 className="col-span-2 text-lg font-semibold mb-2">
-                  Operational Info
-                </h3>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="operational_offices"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Operational Offices (comma separated)
-                  </label>
-                  <input
-                    id="operational_offices"
-                    type="text"
-                    name="operational_offices"
-                    value={formData.operational_offices.join(", ")}
-                    onChange={handleOfficesChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="project_count"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Project Count
-                  </label>
-                  <input
-                    id="project_count"
-                    type="number"
-                    name="project_count"
-                    value={formData.project_count}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="services_description"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Services Description
-                  </label>
-                  <textarea
-                    id="services_description"
-                    name="services_description"
-                    value={formData.services_description}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-24"
-                  />
-                </div>
-
-                <div className="flex flex-col col-span-2">
-                  <label
-                    htmlFor="company_profile"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Company Profile
-                  </label>
-                  <textarea
-                    id="company_profile"
-                    name="company_profile"
-                    value={formData.company_profile}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-24"
-                  />
-                </div>
+              <div className="md:col-span-2">
+                <Label>Founders Info</Label>
+                <Textarea
+                  name="founders_info"
+                  value={about?.founders_info || ""}
+                  onChange={handleChange}
+                  placeholder="Founders Info"
+                  className="h-28"
+                />
               </div>
 
-              {/* Vision & Mission */}
-              <div className="block border border-slate-300 p-4 rounded-lg">
-                <h3 className="col-span-3 text-lg font-semibold mb-2">
-                  Vision & Mission & value
-                </h3>
+              <div className="md:col-span-2">
+                <Label>Introduction</Label>
+                <Textarea
+                  name="intro_text"
+                  value={about?.intro_text || ""}
+                  onChange={handleChange}
+                  placeholder="Introduction"
+                  className="h-28"
+                />
+              </div>
+            </div>
+          </section>
 
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="vision"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Vision
-                  </label>
-                  <textarea
-                    id="vision"
-                    type="text"
-                    name="vision"
-                    value={formData.vision}
-                    onChange={handleChange}
-                    className="border border-slate-300 focus:bg-slate-200 rounded-xl px-3 p-2 w-full h-32"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="mission"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Mission
-                  </label>
-                  <textarea
-                    id="mission"
-                    type="text"
-                    name="mission"
-                    value={formData.mission}
-                    onChange={handleChange}
-                    className="border border-slate-300 h-32 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="value_proposition"
-                    className="mb-1 font-medium text-gray-700"
-                  >
-                    Value Proposition
-                  </label>
-                  <textarea
-                    id="value_proposition"
-                    type="text"
-                    name="value_proposition"
-                    value={formData.value_proposition}
-                    onChange={handleChange}
-                    className="border border-slate-300 h-32 focus:bg-slate-200 rounded-xl px-3 p-2 w-full"
-                  />
-                </div>
+          {/* Operations */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4">Operational Info</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <Label>Operational Offices (comma separated)</Label>
+                <Input
+                  name="operational_offices"
+                  value={(about?.operational_offices || []).join(", ")}
+                  onChange={handleOfficesChange}
+                  placeholder="Office1, Office2"
+                />
               </div>
 
-              {/* Submit buttons */}
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 cursor-pointer hover:bg-red-200 hover:text-red-500 transition-all bg-gray-400 text-white rounded"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 cursor-pointer hover:bg-blue-200 transition-all hover:text-blue-500 text-white rounded"
-                >
-                  {editing ? "Update" : "Create"}
-                </button>
+              <div>
+                <Label>Project Count</Label>
+                <Input
+                  name="project_count"
+                  type="number"
+                  value={about?.project_count || ""}
+                  onChange={handleChange}
+                  placeholder="Project Count"
+                />
               </div>
-            </form>
+
+              <div className="md:col-span-2">
+                <Label>Services Description</Label>
+                <Textarea
+                  name="services_description"
+                  value={about?.services_description || ""}
+                  onChange={handleChange}
+                  placeholder="Services Description"
+                  className="h-28"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Company Profile</Label>
+                <Textarea
+                  name="company_profile"
+                  value={about?.company_profile || ""}
+                  onChange={handleChange}
+                  placeholder="Company Profile"
+                  className="h-28"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Vision / Mission */}
+          <section>
+            <h2 className="text-lg font-semibold mb-4">Vision & Mission</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2">
+                <Label>Vision</Label>
+                <Textarea
+                  name="vision"
+                  value={about?.vision || ""}
+                  onChange={handleChange}
+                  placeholder="Vision"
+                  className="h-40"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Mission</Label>
+                <Textarea
+                  name="mission"
+                  value={about?.mission || ""}
+                  onChange={handleChange}
+                  placeholder="Mission"
+                  className="h-40"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Label>Value Proposition</Label>
+                <Textarea
+                  name="value_proposition"
+                  value={about?.value_proposition || ""}
+                  onChange={handleChange}
+                  placeholder="Value Proposition"
+                  className="h-40"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* SAVE BUTTON */}
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex gap-2 items-center cursor-pointer hover:bg-green-200 hover:text-green-500 transition-all justify-center bg-green-500 text-white px-8 py-2 rounded-lg disabled:opacity-50"
+            >
+              <SaveAll /> {saving ? "Saving..." : " Save About Us"}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </div>
     </div>
   );
 }

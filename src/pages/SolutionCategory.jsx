@@ -70,7 +70,7 @@ export default function SolutionCategory() {
       } else {
         setCurrentPage(1);
         setTotalPages(
-          Math.max(1, Math.ceil((normalized.items?.length || 0) / PAGE_SIZE))
+          Math.max(1, Math.ceil((normalized.items?.length || 0) / PAGE_SIZE)),
         );
         setTotalItems(normalized.items?.length ?? 0);
       }
@@ -275,7 +275,7 @@ export default function SolutionCategory() {
                           <div className="flex items-center justify-end gap-3">
                             <button
                               onClick={() => handleEdit(item)}
-                              className="p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition"
+                              className="p-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition"
                               title="Edit"
                             >
                               <Edit className="w-5 h-5" />

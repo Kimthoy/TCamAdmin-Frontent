@@ -33,11 +33,14 @@ export default function EventPage() {
   const load = async () => {
     setLoading(true);
     setError(null);
+
     try {
       const res = await fetchEvents({ per_page: 100 });
+
       const list = Array.isArray(res.data?.data)
         ? res.data.data
         : res.data || [];
+
       setEventsRaw(list);
     } catch (err) {
       console.error(err);
@@ -58,11 +61,12 @@ export default function EventPage() {
   const filtered = useMemo(() => {
     if (!query.trim()) return eventsRaw;
     const q = query.toLowerCase();
+
     return eventsRaw.filter(
       (e) =>
         e.title?.toLowerCase().includes(q) ||
         e.subtitle?.toLowerCase().includes(q) ||
-        e.location?.toLowerCase().includes(q)
+        e.location?.toLowerCase().includes(q),
     );
   }, [eventsRaw, query]);
 
@@ -84,28 +88,28 @@ export default function EventPage() {
      DELETE
   ======================= */
   const handleDelete = async () => {
-    if (!deleteModal.event) return;
+    if (!deleteModal.event?.id) return;
+
     setDeleting(true);
+
     try {
+      console.log("Deleting event ID:", deleteModal.event.id);
+
       await deleteEvent(deleteModal.event.id);
+
       await load();
+
       setDeleteModal({ open: false, event: null });
     } catch (err) {
-      console.error(err);
+      console.error("Delete failed:", err.response || err);
     } finally {
       setDeleting(false);
     }
   };
-  const getCertificateUrl = (cert) =>
-    cert.file
-      ? `${process.env.REACT_APP_API_BASE_URL || ""}/storage/${cert.file}`
-      : null;
 
   return (
     <div className="space-y-8">
-      {/* =======================
-          HEADER
-      ======================= */}
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -125,7 +129,7 @@ export default function EventPage() {
               setPage(1);
             }}
             placeholder="Search events..."
-            className="w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500/40"
+            className="w-64 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-green-500/40"
           />
 
           <button
@@ -133,7 +137,7 @@ export default function EventPage() {
               setEditing(null);
               setFormOpen(true);
             }}
-            className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2"
+            className="px-5 py-2.5 bg-gradient-to-r from-green-500 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             New Event
@@ -141,14 +145,12 @@ export default function EventPage() {
         </div>
       </div>
 
-      {/* =======================
-          TABLE CARD
-      ======================= */}
+      {/* TABLE CARD */}
       <div className="bg-white dark:bg-gray-800/90 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         {loading ? (
           <div className="p-16 text-center">
             <div className="inline-flex items-center gap-3 text-gray-500">
-              <div className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-blue-500 rounded-full" />
+              <div className="animate-spin h-8 w-8 border-4 border-gray-300 border-t-green-500 rounded-full" />
               Loading events...
             </div>
           </div>
@@ -192,7 +194,6 @@ export default function EventPage() {
                         key={e.id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700/40"
                       >
-                        {/* Poster */}
                         <td className="px-6 py-4">
                           <div className="w-24 h-16 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center">
                             {e.poster_image_url ? (
@@ -207,7 +208,6 @@ export default function EventPage() {
                           </div>
                         </td>
 
-                        {/* Title */}
                         <td className="px-6 py-4">
                           <div className="font-semibold">{e.title}</div>
                           {e.subtitle && (
@@ -217,7 +217,6 @@ export default function EventPage() {
                           )}
                         </td>
 
-                        {/* Date & Location */}
                         <td className="px-6 py-4 space-y-1 text-sm text-gray-600">
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
@@ -228,7 +227,7 @@ export default function EventPage() {
                                     day: "2-digit",
                                     month: "short",
                                     year: "numeric",
-                                  }
+                                  },
                                 )
                               : "—"}
                           </div>
@@ -239,7 +238,6 @@ export default function EventPage() {
                           </div>
                         </td>
 
-                        {/* Status */}
                         <td className="px-6 py-4">
                           <span
                             className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
@@ -257,7 +255,6 @@ export default function EventPage() {
                           </span>
                         </td>
 
-                        {/* Actions */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-3">
                             <button
@@ -265,7 +262,7 @@ export default function EventPage() {
                                 setEditing(e);
                                 setFormOpen(true);
                               }}
-                              className="p-3 rounded-xl hover:bg-blue-50 text-blue-600"
+                              className="p-3 rounded-xl hover:bg-green-50 text-green-600"
                             >
                               <Edit className="w-5 h-5" />
                             </button>
@@ -287,9 +284,7 @@ export default function EventPage() {
               </table>
             </div>
 
-            {/* =======================
-                PAGINATION
-            ======================= */}
+            {/* PAGINATION */}
             <div className="px-6 py-4 border-t flex justify-between items-center">
               <div className="text-sm text-gray-600">
                 Showing{" "}
@@ -325,9 +320,7 @@ export default function EventPage() {
         )}
       </div>
 
-      {/* =======================
-          MODALS
-      ======================= */}
+      {/* MODALS */}
       <EventForm
         open={formOpen}
         initial={editing}

@@ -8,6 +8,7 @@ import {
   X,
   User,
   ArrowDownNarrowWide,
+  Check,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import { fetchCareer } from "../../api/candidate";
@@ -33,7 +34,7 @@ export default function Candidate() {
     {
       value: "reviewed",
       label: "Reviewed",
-      color: "bg-blue-100 text-blue-700",
+      color: "bg-green-100 text-green-700",
     },
     {
       value: "shortlisted",
@@ -134,7 +135,7 @@ export default function Candidate() {
      FILTER BY TAB (FIXED)
   ========================== */
   const filteredData = data.filter(
-    (c) => (c.status || "pending") === activeTab
+    (c) => (c.status || "pending") === activeTab,
   );
 
   /* =========================
@@ -143,7 +144,7 @@ export default function Candidate() {
   return (
     <div className="p-6 space-y-6">
       {/* HEADER */}
-      <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white shadow-lg">
+      <div className="rounded-2xl  p-6  shadow-lg">
         <h1 className="text-2xl font-semibold">Candidate Applications</h1>
         <p className="text-sm opacity-90 mt-1">
           Manage and review job applicants
@@ -155,12 +156,15 @@ export default function Candidate() {
             <button
               key={s.value}
               onClick={() => setActiveTab(s.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+              className={`px-4 py-2 rounded-full cursor-pointer text-sm font-medium transition ${
                 activeTab === s.value
-                  ? "bg-white text-gray-800"
-                  : "bg-white/20 text-white hover:bg-white/30"
+                  ? "bg-green-100 text-green-500"
+                  : "bg-white/20 text-slate-700 hover:bg-white/30"
               }`}
             >
+              {activeTab === s.value && (
+                <ArrowDownNarrowWide className="inline-block w-4 h-4 mr-2" />
+              )}
               {s.label} (
               {data.filter((c) => (c.status || "pending") === s.value).length})
             </button>
@@ -183,7 +187,7 @@ export default function Candidate() {
       <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow border border-slate-300">
         {loading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="animate-spin w-6 h-6 text-blue-600" />
+            <Loader2 className="animate-spin w-6 h-6 text-green-600" />
           </div>
         ) : filteredData.length === 0 ? (
           <div className="py-16 text-center text-gray-500">
@@ -204,10 +208,10 @@ export default function Candidate() {
               {filteredData.map((item) => (
                 <tr
                   key={item.id}
-                  className="border-b border-slate-300 hover:bg-blue-50/40 transition"
+                  className="border-b border-slate-300 hover:bg-green-50/40 transition"
                 >
                   <td className="px-6 py-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
                       {item.first_name?.[0]}
                       {item.last_name?.[0]}
                     </div>
@@ -220,7 +224,7 @@ export default function Candidate() {
                   </td>
 
                   <td className="px-6 py-4">
-                    <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                    <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
                       {item.position_apply}
                     </span>
                   </td>
@@ -233,7 +237,7 @@ export default function Candidate() {
                     <button
                       onClick={() =>
                         setOpenStatusId(
-                          openStatusId === item.id ? null : item.id
+                          openStatusId === item.id ? null : item.id,
                         )
                       }
                       className={`px-3 py-1 rounded-full flex gap-2 items-center text-xs font-medium ${
@@ -274,14 +278,14 @@ export default function Candidate() {
                           href={item.cv_file}
                           target="_blank"
                           rel="noreferrer"
-                          className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                          className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                         >
                           <FileText size={16} />
                         </a>
                       )}
                       <button
                         onClick={() => setSelected(item)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg"
                       >
                         <Eye size={18} />
                       </button>

@@ -69,7 +69,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               placeholder="Job Title"
               value={job.job_title}
               onChange={(e) => handleChange("job_title", e.target.value)}
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
               required
             />
           </div>
@@ -80,7 +80,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               placeholder="Location"
               value={job.location}
               onChange={(e) => handleChange("location", e.target.value)}
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
           <div>
@@ -90,7 +90,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               placeholder="Hiring Number"
               value={job.hiring_number}
               onChange={(e) => handleChange("hiring_number", e.target.value)}
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
           <div>
@@ -100,7 +100,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               placeholder="Closing Date"
               value={job.closing_date}
               onChange={(e) => handleChange("closing_date", e.target.value)}
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
           onChange={(e) =>
             handleChange("qualifications.education_level", e.target.value)
           }
-          className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mb-2"
+          className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mb-2"
         />
         <input
           type="text"
@@ -174,7 +174,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
           onChange={(e) =>
             handleChange("qualifications.experience_required", e.target.value)
           }
-          className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400"
+          className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400"
         />
       </div>
 
@@ -191,7 +191,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               onChange={(e) =>
                 handleChange("application_info.email", e.target.value)
               }
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
           <div>
@@ -203,7 +203,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               onChange={(e) =>
                 handleChange("application_info.phone_number", e.target.value)
               }
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
           <div>
@@ -215,7 +215,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               onChange={(e) =>
                 handleChange("application_info.telegram_link", e.target.value)
               }
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
           <div>
@@ -227,7 +227,7 @@ export default function JobForm({ initialData = {}, onSubmit, loading }) {
               onChange={(e) =>
                 handleChange("application_info.note", e.target.value)
               }
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400 mt-2"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400 mt-2"
             />
           </div>
         </div>
@@ -269,7 +269,7 @@ function DynamicField({
               placeholder={placeholder}
               value={item}
               onChange={(e) => onChange(idx, e.target.value)}
-              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400"
+              className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400"
             />
           ) : (
             <>
@@ -284,7 +284,7 @@ function DynamicField({
                     name: e.target.value,
                   })
                 }
-                className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400"
+                className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400"
               />
               {extraFieldKey && (
                 <input
@@ -294,7 +294,7 @@ function DynamicField({
                   onChange={(e) =>
                     onChange(idx, { ...item, [extraFieldKey]: e.target.value })
                   }
-                  className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-blue-800 border dark:text-slate-400"
+                  className="shadow px-3 py-2 rounded-lg w-full border-gray-400 text-green-800 border dark:text-slate-400"
                 />
               )}
               {checkboxKey && (

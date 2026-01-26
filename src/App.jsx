@@ -32,6 +32,7 @@ import JoinUs from "./pages/JoinUs";
 import EventAdmin from "./pages/Event";
 import RequestDemoAdmin from "./pages/RequestDemoAdmin";
 import SubProduct from "./pages/SubProduct";
+import AdminContentPage from "./pages/AdminContentPage";
 
 function App() {
   return (
@@ -53,7 +54,7 @@ function App() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="banners" element={<Banners />} />
         <Route path="request-demo" element={<RequestDemoAdmin />} />
-        <Route path="sub-product" element={<SubProduct  />} />
+        <Route path="sub-product" element={<SubProduct />} />
         <Route path="product-category" element={<ProductCategory />} />
         <Route path="products" element={<Product />} />
         <Route path="industry" element={<Industry />} />
@@ -61,6 +62,7 @@ function App() {
         <Route path="solutions" element={<Solution />} />
         <Route path="solution-category" element={<SolutionCategory />} />
         <Route path="customers" element={<CustomersPage />} />
+        <Route path="widgets" element={<AdminContentPage />} />
         <Route
           path="customer-categories"
           element={<CustomerCategoriesPage />}

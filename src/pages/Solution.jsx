@@ -49,7 +49,7 @@ export default function Solution() {
     return items.filter(
       (s) =>
         (s.title || "").toLowerCase().includes(q) ||
-        (s.description || "").toLowerCase().includes(q)
+        (s.description || "").toLowerCase().includes(q),
     );
   }, [query, items]);
 
@@ -181,7 +181,7 @@ export default function Solution() {
                       <div className="flex justify-end gap-3">
                         <button
                           onClick={() => handleEdit(s)}
-                          className="p-2 rounded-lg hover:cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 transition-all"
+                          className="p-2 rounded-lg hover:cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 transition-all"
                         >
                           <Edit className="w-5 h-5" />
                         </button>

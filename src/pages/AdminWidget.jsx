@@ -12,7 +12,7 @@ const Label = ({ children }) => (
 const Input = (props) => (
   <input
     {...props}
-    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 input-inner-shadow ${
       props.className || ""
     }`}
   />
@@ -21,7 +21,7 @@ const Input = (props) => (
 const Textarea = (props) => (
   <textarea
     {...props}
-    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+    className={`w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 input-inner-shadow ${
       props.className || ""
     }`}
   />
@@ -45,7 +45,7 @@ export default function AdminWidget() {
         // If the backend returns a full URL accessor, use it
         setPreview(
           w.app_logo_url ||
-            (w.app_logo ? `/storage/widgets/${w.app_logo}` : null)
+            (w.app_logo ? `/storage/widgets/${w.app_logo}` : null),
         );
       } else {
         setWidget({});
@@ -107,23 +107,14 @@ export default function AdminWidget() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-green-500 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-8xl mx-auto ">
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div className="px-6 py-4 border-b bg-gradient-to-r from-blue-600 to-indigo-600">
-          <h1 className="text-xl font-semibold text-white">
-            Website Widget Settings
-          </h1>
-          <p className="text-sm text-blue-100">
-            Manage branding, contact & footer
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit} className="p-6 space-y-12">
           {/* General */}
           <section>
@@ -273,7 +264,7 @@ export default function AdminWidget() {
           <div className="pt-4">
             <button
               disabled={saving}
-              className="inline-flex gap-2 items-center cursor-pointer hover:bg-blue-200 hover:text-blue-500 transition-all justify-center bg-blue-500 text-white px-8 py-2 rounded-lg  disabled:opacity-50"
+              className="inline-flex gap-2 items-center cursor-pointer hover:bg-green-200 hover:text-green-500 transition-all justify-center bg-green-500 text-white px-8 py-2 rounded-lg  disabled:opacity-50"
             >
               <SaveAll /> {saving ? "Saving..." : " Settings"}
             </button>

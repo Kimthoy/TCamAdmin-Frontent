@@ -132,7 +132,7 @@ export default function Job() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => handleEdit(job.id)}
-                    className="text-blue-600 hover:text-blue-700 transition-colors p-2 rounded-full hover:bg-blue-50 dark:hover:bg-slate-800"
+                    className="text-green-600 hover:text-green-700 transition-colors p-2 rounded-full hover:bg-green-50 dark:hover:bg-slate-800"
                   >
                     <Edit className="w-5 h-5" />
                   </button>

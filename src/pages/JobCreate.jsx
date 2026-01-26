@@ -46,7 +46,7 @@ export default function JobCreate() {
         </h1>
         <Link
           to="/jobs"
-          className="px-3 py-2 border text-slate-300 border-gray-300  bg-blue-700 dark:border-gray-600 rounded-xl "
+          className="px-3 py-2 border text-slate-300 border-gray-300  bg-green-700 dark:border-gray-600 rounded-xl "
         >
           Back
         </Link>

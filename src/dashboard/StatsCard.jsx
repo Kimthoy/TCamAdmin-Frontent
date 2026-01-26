@@ -13,10 +13,10 @@ const variants = {
     border: "border-purple-200 dark:border-purple-800",
     icon: "from-purple-400/40 to-purple-600/40",
   },
-  blue: {
-    bg: "from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20",
-    border: "border-blue-200 dark:border-blue-800",
-    icon: "from-blue-400/40 to-blue-600/40",
+  green: {
+    bg: "from-green-50 to-cyan-50 dark:from-green-900/20 dark:to-cyan-900/20",
+    border: "border-green-200 dark:border-green-800",
+    icon: "from-green-400/40 to-green-600/40",
   },
   orange: {
     bg: "from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20",

@@ -134,7 +134,7 @@ function Industry() {
         <h1 className="text-3xl font-bold">Industries</h1>
         <button
           onClick={() => openModal()}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow"
+          className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 shadow"
         >
           <Plus className="w-4 h-4" /> Add Industry
         </button>
@@ -179,7 +179,7 @@ function Industry() {
                   ind.solutions.map((s, i) => (
                     <span
                       key={i}
-                      className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-sm"
+                      className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm"
                     >
                       {s.title}
                     </span>
@@ -283,7 +283,7 @@ function Industry() {
                 <button
                   type="button"
                   onClick={addSolution}
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                  className="flex items-center gap-1 text-green-600 hover:text-green-800 text-sm"
                 >
                   <Plus className="w-4 h-4" /> Add Solution
                 </button>
@@ -333,7 +333,7 @@ function Industry() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                 >
                   {editingIndustry ? "Update" : "Create"}
                 </button>

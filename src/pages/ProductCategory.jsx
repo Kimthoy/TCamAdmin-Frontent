@@ -52,7 +52,7 @@ export default function ProductCategory() {
       setError(
         err?.response?.data?.message ||
           err?.message ||
-          "Failed to load categories"
+          "Failed to load categories",
       );
       setCategoriesRaw([]);
     } finally {
@@ -69,7 +69,7 @@ export default function ProductCategory() {
     if (!query.trim()) return categoriesRaw;
     const q = query.trim().toLowerCase();
     return categoriesRaw.filter((c) =>
-      (c.name || "").toLowerCase().includes(q)
+      (c.name || "").toLowerCase().includes(q),
     );
   }, [categoriesRaw, query]);
 
@@ -270,7 +270,7 @@ export default function ProductCategory() {
                           <div className="flex items-center justify-end gap-3">
                             <button
                               onClick={() => handleEdit(c)}
-                              className="p-3 rounded-xl hover:cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 transition-all"
+                              className="p-3 rounded-xl hover:cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 transition-all"
                               title="Edit"
                             >
                               <Edit className="w-5 h-5" />

@@ -17,7 +17,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Tooltip,
-  Filler
+  Filler,
 );
 
 export function ActivityChart({ data = [] }) {
@@ -97,9 +97,9 @@ export function ActivityChart({ data = [] }) {
           0,
           chartArea.top,
           0,
-          chartArea.bottom
+          chartArea.bottom,
         );
-        gradient.addColorStop(0, "rgba(59,130,246,0.45)"); // blue
+        gradient.addColorStop(0, "rgba(59,130,246,0.45)"); // green
         gradient.addColorStop(1, "rgba(99,102,241,0.05)"); // violet faint
         chart.data.datasets[0].backgroundColor = gradient;
         chart.data.datasets[0].borderColor = "rgba(59,130,246,1)";
@@ -134,7 +134,7 @@ export function ActivityChart({ data = [] }) {
   ];
 
   return (
-    <div className="h-full w-full p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-black rounded-2xl">
+    <div className="h-full w-full p-6 bg-gradient-to-br from-green-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-black rounded-2xl">
       <div className="h-full">
         <Line data={dataset} options={options} plugins={plugins} />
       </div>
